@@ -8,17 +8,24 @@ When adopting this template, replace bracketed placeholders with project-specifi
 
 When resuming work in this repository:
 
+**Always:**
+
 1. Read `README.md`.
 2. Read this file.
 3. Read `TEMPLATE_SOURCE.md` if it exists, especially before changing shared setup or instruction files.
-4. Read `docs/local-development.md` before running project commands.
+
+**Before running project commands or environment-dependent work:**
+
+4. Read `docs/local-development.md`.
 5. Inspect `Makefile` to learn the available targets and whether they depend on local configuration.
-6. Inspect `.env.local.example` to learn expected machine-specific variables.
-7. If `.env.local` exists, inspect it before running environment-dependent commands. Do not print secrets or copy private values into tracked files.
-8. If the task depends on local configuration and `.env.local` is missing or required values are unset, ask for missing machine-specific values before assuming paths, environment names, credentials, or data roots.
-9. Read the other relevant document in `docs/`.
-10. Inspect the target source file before editing it.
-11. After the relevant docs, local configuration, and target files are understood, run the appropriate `make` target when needed.
+6. Inspect `.env.local.example` for expected variables, and `.env.local` if it exists. Do not print secrets or copy private values into tracked files.
+7. If the task depends on local configuration and required values are unset, ask for missing machine-specific values before assuming paths, environment names, credentials, or data roots.
+
+**For the specific task:**
+
+8. Read the relevant documents in `docs/` (see Docs Map below).
+9. Inspect target source files before editing them.
+10. Run the appropriate `make` target when needed.
 
 ## Primary Rules
 
@@ -53,92 +60,41 @@ If a doc does not exist in the adopted project, infer the local pattern from nea
 
 ## Agent Instruction Hygiene
 
-Follow `docs/agent-instructions.md` when editing agent-facing instructions.
-
-Keep top-level agent instructions concise, specific, and non-conflicting. Avoid ambiguous instructions such as "be careful" or "follow best practices" unless they are paired with explicit actions, questions, or doc references.
-
-Put durable procedures in `docs/` and use `AGENTS.md` to point agents to the right document.
-
-For larger repositories, use nested `AGENTS.md` or `CLAUDE.md` files only when a subdirectory needs different instructions. More specific instructions should clarify local conventions without duplicating the root file.
+Follow `docs/agent-instructions.md` when editing agent-facing instructions. Keep top-level files (`AGENTS.md`, `CLAUDE.md`) concise, specific, and non-conflicting. Put durable procedures in `docs/`. Use nested `AGENTS.md` only when a subdirectory needs different instructions.
 
 ## Writing and Sourcing
 
-Use `docs/writing-guide.md` for general prose and documentation changes. Use `docs/scientific-integrity.md` when the repository contains scientific, scholarly, clinical, biomedical, statistical, or data-driven claims.
-
-Scientific accuracy and source fidelity are more important than polished prose. Prefer primary literature, official organization pages, project-owned pages, and source documents already tracked or referenced by the repository. Use PubMed or PubMed Central when relevant.
-
-For scientific or technical writing, ask for the intended audience and useful examples such as previous projects, papers, reports, websites, or venue instructions. Search reputable external writing guidance when it would help clarify structure, style, or reporting expectations.
+For prose and documentation changes, follow `docs/writing-guide.md`. For scientific, scholarly, clinical, biomedical, statistical, or data-driven claims, also follow `docs/scientific-integrity.md`. Prefer primary literature, official organization pages, project-owned pages, and source documents already tracked by the repository. Use PubMed or PubMed Central for biomedical references when relevant.
 
 ## Testing Discipline
 
-For coding projects, follow `docs/testing-guide.md`. Before changing behavior, identify expected behavior, positive controls, negative controls, edge cases, and the relevant `make` target that verifies the change.
-
-Prefer adding or updating tests before implementation when practical. If the repository lacks tests, work with the human maintainer to identify a minimal testing scenario and document the testing procedure in `docs/`.
-
-For websites or rendered documentation, at least confirm the project builds with `make build` when practical. Add stronger tests such as link checks, smoke tests, or visual checks when the project warrants them.
+For coding projects, follow `docs/testing-guide.md`. Identify expected behavior, positive controls, negative controls, and edge cases before changing behavior, and prefer adding or updating tests before implementation. For websites or rendered documentation, at minimum confirm `make build` succeeds.
 
 ## Automation Discipline
 
-Follow `docs/automation-guide.md` when work involves repeated manual steps. Agents should notice repeated manual labor and propose scripts, `make` targets, tests, or pipelines that reduce variance, improve consistency, and improve computing efficiency.
-
-Keep automation as small as the problem allows. Prefer deterministic scripts and documented `make` targets for repeated commands, generated outputs, data transformations, and validation steps. Pair automation with tests, fixtures, or smoke checks when practical.
-
-For repeated writing or documentation work, propose reusable templates, rubrics, or checklists. For example, manuscript drafts can use a manuscript evaluation template so each draft is reviewed with the same criteria.
+When work involves repeated manual steps, follow `docs/automation-guide.md`. Notice repeated manual labor and propose scripts, `make` targets, tests, or pipelines that reduce variance. For repeated writing or review, propose reusable templates, rubrics, or checklists.
 
 ## Privacy and Personal Data
 
-Follow `docs/privacy-guide.md` when a project may touch individual-level data or personal information. Analysis scripts, lecture slides, examples, tests, fixtures, notebooks, and documentation should not contain real individual-level data unless the project has an explicit, documented reason and the human maintainer confirms it is appropriate.
-
-For projects that handle individual-level data, work with the human maintainer to define a programmatic de-identification procedure and make it part of data adoption and code development. Prefer reusable scripts, pipelines, and `make` targets for de-identification steps. Avoid manually inspecting raw individual-level records through agent workflows unless the human maintainer explicitly confirms that it is appropriate and necessary.
-
-Use data minimization in documentation. If a project supports education, mentoring, research supervision, or team coordination, refer to people by role when the name is not necessary. For example, write "the student" instead of repeating a student's name across files.
+When a project may touch individual-level data or personal information, follow `docs/privacy-guide.md`. Do not put real individual-level data in scripts, slides, examples, tests, fixtures, notebooks, or documentation without explicit human-maintainer approval. Prefer programmatic de-identification over manual agent inspection of raw records. Use role labels (such as "the student") in documentation when names are not necessary.
 
 ## Environment Behavior
 
-Use `.env.local` for local paths and machine-specific settings. Treat `.env.local.example` as documentation of required variables, not as an active configuration file.
+Use `.env.local` for machine-specific values; treat `.env.local.example` as documentation. Before running `make` targets that may depend on local paths, credentials, external data, or rendering tools, check whether required values are set and ask the user for missing values rather than guessing. Continue with task parts that do not depend on the local environment.
 
-Check local configuration before running `make` targets that may depend on local paths, credentials, external data, rendering tools, or machine-specific executables. If the task depends on those values and `.env.local` is missing or required values are unset, ask the user for the missing local values before guessing. If a task can proceed without those values, continue with the parts that do not depend on the local environment.
-
-For new projects or unsettled tooling, first clarify what the project needs to achieve, who will run it, what data and environments it depends on, and which compatibility constraints matter. Use those answers, plus current best-practice research when needed, to guide package manager choices, repository structure, and `Makefile` targets.
+For new projects or unsettled tooling, first clarify what the project should produce, who will run it, what data and environments it depends on, and which compatibility constraints matter before choosing package managers, repository structure, or `Makefile` targets.
 
 ## Validation
 
-Before finishing a change, run the narrowest relevant `make` target documented in `docs/local-development.md` when practical.
-
-Common examples:
-
-- Install dependencies: `make install`
-- Start local preview: `make dev`
-- Build or render: `make build`
-- Run tests: `make test`
-- Run linters: `make lint`
-- Website or rendered-output minimum: `make build`
-- Markdown-only docs: review changed files for links, paths, headings, and placeholders
-
-If validation is skipped or fails, report that clearly and include the reason.
+Before finishing a change, run the narrowest relevant `make` target documented in `docs/local-development.md` when practical. For Markdown-only docs, review changed files for links, paths, headings, and placeholders. If validation is skipped or fails, report that clearly and include the reason.
 
 ## Project-Specific Docs
 
-Project-specific docs are encouraged when a convention is durable, repeated, or easy to get wrong. Do not keep narrow docs in this base template, but help create them when a real project needs them.
-
-Examples include:
-
-- `docs/publications.md`
-- `docs/navigation.md`
-- `docs/team-directory.md`
-- `docs/textbook-notes.md`
-- `docs/data-management.md`
-- `docs/release-process.md`
-- `docs/testing.md`
-- `docs/automation.md`
-
-When the required convention is unclear, ask concise questions and document the answer in `docs/` once it becomes stable.
+When a convention is durable, repeated, or easy to get wrong, create a focused doc under `docs/`. Do not keep narrow docs in this base template, but help create them when a real project needs them. See `docs/project-specific-guidelines.md` for examples and the adoption checklist.
 
 ## Template Adoption
 
-When this structure is adopted by another project, fill in `TEMPLATE_SOURCE.md` with the template repository, commit hash or other stable identifier, adoption date, copied files, and local adaptations.
-
-When a project wants to catch up with a newer template version, follow `docs/template-adoption.md`. Compare the recorded template baseline with the newer template, apply relevant changes deliberately, and append a template update log entry.
+When this structure is adopted by another project, fill in `TEMPLATE_SOURCE.md` with the template repository, identifier, adoption date, copied files, and local adaptations. To catch up with a newer template version, follow `docs/template-adoption.md`.
 
 ## Handoff Behavior
 

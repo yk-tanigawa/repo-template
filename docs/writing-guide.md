@@ -18,6 +18,12 @@ Use concrete nouns and verbs. Prefer "Run `make build` before opening a pull req
 
 Adapt the style to the intended use case. A lab website, API reference, scientific report, textbook note, grant text, and internal runbook may need different levels of detail, formality, citation, and assumed background.
 
+## Single Source of Truth
+
+When a topic is unclear, improve the one place where it is canonically explained instead of repeating the explanation across files. Cross-file repetition makes documentation longer to read, easier to drift out of sync, and harder to maintain. From other locations, link to the canonical doc rather than restating its content.
+
+This applies to general documentation as well as agent instruction files: top-level files such as `AGENTS.md`, `README.md`, and `CLAUDE.md` should route to the canonical doc instead of summarizing it. The same rule holds across `docs/` files: each topic should have one home.
+
 ## Structure
 
 Use headings to help readers scan. Keep heading names literal and predictable.

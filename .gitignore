@@ -1,17 +1,9 @@
-# macOS
-.DS_Store
-.localized
+# Build this file by concatenating the relevant templates from
+# https://github.com/github/gitignore (e.g., Python, Node, R, Hugo,
+# Quarto, Jupyter, macOS, IDE editors) followed by project-specific
+# entries below.
 
-# Local machine-specific config
+# Local machine-specific config (always ignored)
 .env.local
 
-# Dependency folders
-node_modules/
-vendor/bundle/
-.ipynb_checkpoints/
-
-# Logs and temporary files
-*.log
-*.tmp
-
-# Add project-specific generated outputs after adoption.
+# Project-specific generated outputs (add after adoption):
