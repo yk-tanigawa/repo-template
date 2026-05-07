@@ -18,6 +18,17 @@ Use concrete nouns and verbs. Prefer "Run `make build` before opening a pull req
 
 Adapt the style to the intended use case. A lab website, API reference, scientific report, textbook note, grant text, and internal runbook may need different levels of detail, formality, citation, and assumed background.
 
+## Sentence and Paragraph Style
+
+These defaults apply to documentation, generated prose, project memos, and chat responses. Adopted projects can override them when a venue style guide demands otherwise.
+
+- One paragraph per message. The first sentence of the paragraph carries the main point.
+- Avoid zig-zag structure. Do not organize a paragraph using "X, not Y" framing. A direct positive statement that moves from the main idea to supporting details is usually clearer.
+- Prefer a sequence of simple sentences over one long sentence. Break complex thoughts into multiple sentences when that improves clarity.
+- Avoid em dashes. They often hide structure that should be made explicit with a period.
+- Use explicit ISO dates such as `2026-04-19` when recording project status, manuscript versions, or correspondence.
+- Preserve standard scientific formatting such as `APOE` for gene symbols even in plain Markdown.
+
 ## Single Source of Truth
 
 When a topic is unclear, improve the one place where it is canonically explained instead of repeating the explanation across files. Cross-file repetition makes documentation longer to read, easier to drift out of sync, and harder to maintain. From other locations, link to the canonical doc rather than restating its content.

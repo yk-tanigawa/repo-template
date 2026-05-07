@@ -20,6 +20,12 @@ Recommended setup flow:
 
 Agents should inspect `.env.local.example` and then check whether `.env.local` exists before environment-dependent work. If `.env.local` exists, inspect it before running `make` targets that may depend on local configuration. Do not print secrets or copy private values into tracked files. If the task depends on local configuration and `.env.local` is missing, ask for missing local values before guessing.
 
+## Claude Code Configuration
+
+The template ships `.claude/settings.json.example` as a starter for Claude Code's per-project configuration. The two most-used fields are `permissions.allow` (pre-approved Bash patterns) and `permissions.additionalDirectories` (paths outside the repository Claude Code may read). Mirror any external paths through `.env.local`.
+
+Use `.claude/settings.json` for shared, committed configuration and `.claude/settings.local.json` for per-machine settings; the template's `.gitignore` excludes the latter. Copy the example file to whichever fits.
+
 ## Software and Package Setup
 
 Work with the human maintainer to identify the software, system packages, language packages, and local tools needed for the project. Do not assume a particular toolchain when the repository has not documented one.

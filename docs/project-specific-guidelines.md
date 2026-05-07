@@ -62,9 +62,20 @@ These docs are examples, not part of the base template.
 - `docs/testing.md` for testing scenarios, fixtures, positive and negative controls, slow tests, and CI expectations.
 - `docs/environment.md` or `docs/setup.md` for package managers, system tools, environment variables, and platform-specific setup.
 - `docs/automation.md` for repeated workflows, generated outputs, scripts, and pipeline conventions.
-- `docs/writing-workflow.md` for writing templates, review rubrics, manuscript evaluation criteria, and revision procedures.
+- `docs/writing-workflow.md` for writing templates, review rubrics, manuscript evaluation criteria, and revision procedures (see `docs/manuscript-evaluation.md` for a worked example).
+- `docs/project-context.md` for stable project assumptions and pending-documentation notes.
 
 Prefer adding a focused doc over burying project-specific rules in `AGENTS.md`.
+
+## Project Context Patterns
+
+Two short patterns help keep agents aligned across sessions without filling `AGENTS.md` with project facts.
+
+**Safe assumptions.** As stable facts about the project become clear, such as central datasets, methods, scope, and current status, record them in a short focused doc (for example `docs/project-context.md`). Future sessions can read these instead of inferring from scratch or asking the user repeatedly. Update the file when assumptions change.
+
+**Pending documentation.** When root-level files such as `README.md` or planning notes are still placeholder drafts, mark them explicitly so agents do not treat the placeholder content as authoritative. Either flag the file in its own opening paragraph ("This README is a starter draft pending project context") or list pending files in `docs/project-context.md`.
+
+Both patterns work best as project-specific docs rather than as additions to `AGENTS.md`, which should stay short.
 
 ## Adoption Checklist
 

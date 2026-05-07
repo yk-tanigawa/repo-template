@@ -55,6 +55,7 @@ When resuming work in this repository:
 - `docs/local-development.md`: `Makefile` targets, environment setup, preview commands, build commands, and validation checklist.
 - `docs/repository-layout.md`: top-level files, path conventions, generated artifacts, and how to document project-specific layout.
 - `docs/project-specific-guidelines.md`: how agents and maintainers should identify and create focused project-specific docs.
+- `docs/manuscript-evaluation.md`: example workflow for evaluating manuscripts and comparing versions; adapt or remove for non-manuscript projects.
 
 If a doc does not exist in the adopted project, infer the local pattern from nearby files and update the docs when the convention becomes stable.
 

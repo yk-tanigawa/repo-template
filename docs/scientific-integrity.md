@@ -32,6 +32,12 @@ Preserve important context such as population, model assumptions, study design, 
 
 For summaries, lead with the main contribution or result. Prefer "The study estimated..." or "The method identifies..." over vague claims such as "This work explores..."
 
+## Avoid Self-Anchoring
+
+When the project will be evaluated, summarized, or compared across versions, do not generate repository-level summaries of the scientific content. Future sessions may anchor on those summaries instead of reading the source material independently. This biases evaluation of new versions, can mask drift between drafts, and can propagate errors that a fresh reading would catch.
+
+When project context is needed, link to the source material such as the manuscript files, cover letter, or results files rather than restating their content in tracked documentation. If a stable reference summary is needed for a specific purpose, generate it from the source on demand instead of relying on a previously written summary.
+
 ## Citation and Metadata Checks
 
 When editing citation metadata, verify:
