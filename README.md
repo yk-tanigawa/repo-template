@@ -74,6 +74,7 @@ Small, self-contained edits can be committed directly to the default branch when
 Update this list to match the project. Keep the top-level documentation stable and put project-specific source, asset, and configuration layout in `docs/repository-layout.md` after those conventions are known.
 
 - `AGENTS.md`: agent-specific operating rules and handoff instructions
+- `CLAUDE.md`: Claude Code entrypoint that imports or points to `AGENTS.md`
 - `README.md`: project overview, workflow, and high-level layout
 - `Makefile`: stable command interface for humans and agents
 - `docs/`: maintainer notes and durable conventions
@@ -90,6 +91,7 @@ Use the relevant docs before making changes.
 - Testing and test-driven development: `docs/testing-guide.md`
 - Privacy and individual-level data: `docs/privacy-guide.md`
 - Automation and repeated work: `docs/automation-guide.md`
+- Agent instruction maintenance: `docs/agent-instructions.md`
 - Template adoption and upstream updates: `docs/template-adoption.md`
 - Local setup, preview, build, and validation commands: `docs/local-development.md`
 - Repository structure and path conventions: `docs/repository-layout.md`

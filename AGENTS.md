@@ -43,12 +43,23 @@ When resuming work in this repository:
 - `docs/testing-guide.md`: test-driven development principles, test scenarios, `make test`, and minimum build checks.
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.
 - `docs/automation-guide.md`: repeated work, scripts, `make` targets, pipelines, and consistency improvements.
+- `docs/agent-instructions.md`: maintaining clear, specific, non-conflicting `AGENTS.md`, `CLAUDE.md`, and nested instruction files.
 - `docs/template-adoption.md`: recording the source template version and catching up with upstream template changes.
 - `docs/local-development.md`: `Makefile` targets, environment setup, preview commands, build commands, and validation checklist.
 - `docs/repository-layout.md`: top-level files, path conventions, generated artifacts, and how to document project-specific layout.
 - `docs/project-specific-guidelines.md`: how agents and maintainers should identify and create focused project-specific docs.
 
 If a doc does not exist in the adopted project, infer the local pattern from nearby files and update the docs when the convention becomes stable.
+
+## Agent Instruction Hygiene
+
+Follow `docs/agent-instructions.md` when editing agent-facing instructions.
+
+Keep top-level agent instructions concise, specific, and non-conflicting. Avoid ambiguous instructions such as "be careful" or "follow best practices" unless they are paired with explicit actions, questions, or doc references.
+
+Put durable procedures in `docs/` and use `AGENTS.md` to point agents to the right document.
+
+For larger repositories, use nested `AGENTS.md` or `CLAUDE.md` files only when a subdirectory needs different instructions. More specific instructions should clarify local conventions without duplicating the root file.
 
 ## Writing and Sourcing
 
