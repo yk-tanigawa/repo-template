@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.localized
+
+# Local machine-specific config
+.env.local
+
+# Dependency folders
+node_modules/
+vendor/bundle/
+.ipynb_checkpoints/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Add project-specific generated outputs after adoption.
