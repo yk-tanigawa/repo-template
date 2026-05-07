@@ -10,14 +10,15 @@ When resuming work in this repository:
 
 1. Read `README.md`.
 2. Read this file.
-3. Read `docs/local-development.md` before running project commands.
-4. Inspect `Makefile` to learn the available targets and whether they depend on local configuration.
-5. Inspect `.env.local.example` to learn expected machine-specific variables.
-6. If `.env.local` exists, inspect it before running environment-dependent commands. Do not print secrets or copy private values into tracked files.
-7. If the task depends on local configuration and `.env.local` is missing or required values are unset, ask for missing machine-specific values before assuming paths, environment names, credentials, or data roots.
-8. Read the other relevant document in `docs/`.
-9. Inspect the target source file before editing it.
-10. After the relevant docs, local configuration, and target files are understood, run the appropriate `make` target when needed.
+3. Read `TEMPLATE_SOURCE.md` if it exists, especially before changing shared setup or instruction files.
+4. Read `docs/local-development.md` before running project commands.
+5. Inspect `Makefile` to learn the available targets and whether they depend on local configuration.
+6. Inspect `.env.local.example` to learn expected machine-specific variables.
+7. If `.env.local` exists, inspect it before running environment-dependent commands. Do not print secrets or copy private values into tracked files.
+8. If the task depends on local configuration and `.env.local` is missing or required values are unset, ask for missing machine-specific values before assuming paths, environment names, credentials, or data roots.
+9. Read the other relevant document in `docs/`.
+10. Inspect the target source file before editing it.
+11. After the relevant docs, local configuration, and target files are understood, run the appropriate `make` target when needed.
 
 ## Primary Rules
 
@@ -42,6 +43,7 @@ When resuming work in this repository:
 - `docs/testing-guide.md`: test-driven development principles, test scenarios, `make test`, and minimum build checks.
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.
 - `docs/automation-guide.md`: repeated work, scripts, `make` targets, pipelines, and consistency improvements.
+- `docs/template-adoption.md`: recording the source template version and catching up with upstream template changes.
 - `docs/local-development.md`: `Makefile` targets, environment setup, preview commands, build commands, and validation checklist.
 - `docs/repository-layout.md`: top-level files, path conventions, generated artifacts, and how to document project-specific layout.
 - `docs/project-specific-guidelines.md`: how agents and maintainers should identify and create focused project-specific docs.
@@ -120,6 +122,12 @@ Examples include:
 - `docs/automation.md`
 
 When the required convention is unclear, ask concise questions and document the answer in `docs/` once it becomes stable.
+
+## Template Adoption
+
+When this structure is adopted by another project, fill in `TEMPLATE_SOURCE.md` with the template repository, commit hash or other stable identifier, adoption date, copied files, and local adaptations.
+
+When a project wants to catch up with a newer template version, follow `docs/template-adoption.md`. Compare the recorded template baseline with the newer template, apply relevant changes deliberately, and append a template update log entry.
 
 ## Handoff Behavior
 

@@ -8,6 +8,7 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `AGENTS.md`: agent-specific operating rules and handoff behavior.
 - `Makefile`: stable command interface for humans and agents.
 - `docs/`: maintainer notes for durable conventions.
+- `TEMPLATE_SOURCE.md`: template source identifier and update history.
 - `.env.local.example`: documented local configuration variables.
 - `.gitignore`: local config, dependency folders, and build artifacts.
 

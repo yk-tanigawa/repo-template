@@ -77,6 +77,7 @@ Update this list to match the project. Keep the top-level documentation stable a
 - `README.md`: project overview, workflow, and high-level layout
 - `Makefile`: stable command interface for humans and agents
 - `docs/`: maintainer notes and durable conventions
+- `TEMPLATE_SOURCE.md`: record of the template version used to initialize or refresh the project
 - `.env.local.example`: documented machine-specific configuration variables
 - `.gitignore`: local config, dependencies, and generated artifacts
 
@@ -89,6 +90,7 @@ Use the relevant docs before making changes.
 - Testing and test-driven development: `docs/testing-guide.md`
 - Privacy and individual-level data: `docs/privacy-guide.md`
 - Automation and repeated work: `docs/automation-guide.md`
+- Template adoption and upstream updates: `docs/template-adoption.md`
 - Local setup, preview, build, and validation commands: `docs/local-development.md`
 - Repository structure and path conventions: `docs/repository-layout.md`
 - Identifying future project-specific docs: `docs/project-specific-guidelines.md`
