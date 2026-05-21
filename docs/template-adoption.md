@@ -49,6 +49,24 @@ git diff [old-template-id]..[new-template-id] -- README.md AGENTS.md docs Makefi
 
 Run those commands in the template repository, then apply relevant changes to the downstream project with normal review.
 
+## Updating the Template From Examples
+
+When improving this template based on a real project, separate the reusable pattern from the example project's local facts before committing the change to the template.
+
+Start from the problem the example revealed, not from the example's exact implementation. The template should preserve general conventions, decision prompts, validation expectations, and reusable folder patterns. It should not inherit project names, institution names, private paths, dates, component names, local workflows, policy references, data categories, source subfolders, or domain-specific outputs unless they are intentionally framed as examples.
+
+Run a de-contamination pass before handing the template update back for review:
+
+- Search changed files for project names, people, institutions, acronyms, local paths, private root variables, event names, deadlines, and domain-specific nouns from the example project.
+- Replace example-specific names with neutral placeholders or project-owned variable names.
+- Move procedural detail into `docs/`; keep `README.md`, `AGENTS.md`, and other top-level files as maps and entrypoints.
+- Remove concrete subfolder inventories, source categories, command names, and validation steps unless they are truly reusable across projects.
+- Keep examples short and clearly labeled as examples.
+- Check that `.env.local.example`, `.gitignore`, and `Makefile` use generic variable names and do not assume one maintainer's machine or storage provider.
+- Confirm the resulting text still tells an adopted project what to decide, where to document the decision, and how to validate the convention.
+
+If a useful pattern is only partially reusable, document the generic rule in the template and leave the project-specific implementation in the downstream project.
+
 ## What to Review
 
 Pay special attention to changes in:

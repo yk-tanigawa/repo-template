@@ -16,8 +16,10 @@ Examples:
 
 - Keep the project easy to inspect from `README.md`, `AGENTS.md`, and `docs/`.
 - Keep source files versioned and generated artifacts out of git unless they are intentionally published assets.
+- Keep sensitive, large, received, or machine-local source material outside git and reference it through documented local configuration.
 - Use stable, relative paths in documentation and metadata.
 - Prefer small, reviewable changes over broad rewrites.
+- Keep reusable procedures in `docs/`; keep source directories focused on source material, current status, and project facts.
 - Make local setup and validation commands explicit.
 - Preserve project-specific naming, content, and editorial conventions.
 
@@ -78,13 +80,15 @@ Update this list to match the project. Keep the top-level documentation stable a
 - `README.md`: project overview, workflow, and high-level layout
 - `Makefile`: stable command interface for humans and agents
 - `docs/`: maintainer notes and durable conventions
+- `_inbox/`: short-lived local intake area for unsorted files; contents are ignored except `_inbox/README.md`
+- `_data/`: optional per-machine symlink to an external Box, Drive, or data root; ignored by git
 - `TEMPLATE_SOURCE.md`: record of the template version used to initialize or refresh the project
 - `.env.local.example`: documented machine-specific configuration variables
 - `.gitignore`: local config, dependencies, and generated artifacts
 
 ## Common Tasks
 
-See the Docs Map in `AGENTS.md` for the canonical list of `docs/` files and when to use each. Project-specific docs such as `docs/testing.md`, `docs/publications.md`, `docs/navigation.md`, `docs/team-directory.md`, or `docs/textbook-notes.md` can be added later when the project needs them.
+See the Docs Map in `AGENTS.md` for the canonical list of `docs/` files and when to use each. Project-specific docs such as `docs/testing.md`, `docs/publications.md`, `docs/navigation.md`, `docs/team-directory.md`, `docs/textbook-notes.md`, or `docs/data-management.md` can be added later when the project needs them.
 
 ## Notes for Agents
 

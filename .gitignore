@@ -7,4 +7,16 @@
 .env.local
 .claude/settings.local.json
 
+# Short-lived local intake folder. Contents are ignored because incoming files
+# may be sensitive, large, generated, prior versions, or raw data. Keep only the
+# README tracked.
+/_inbox/*
+!/_inbox/README.md
+
+# Optional per-machine symlink to a Box, Drive, raw-data, private-data, or other
+# external root. Configure the root in .env.local and document it in
+# .env.local.example.
+/_data
+/_data/
+
 # Project-specific generated outputs (add after adoption):

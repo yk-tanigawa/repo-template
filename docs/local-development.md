@@ -20,6 +20,8 @@ Recommended setup flow:
 
 Agents should inspect `.env.local.example` and then check whether `.env.local` exists before environment-dependent work. If `.env.local` exists, inspect it before running `make` targets that may depend on local configuration. Do not print secrets or copy private values into tracked files. If the task depends on local configuration and `.env.local` is missing, ask for missing local values before guessing.
 
+If the project uses an external Box, Drive, raw-data, private-data, or other external root, document the root variable in `.env.local.example` and keep the private value in `.env.local`. Projects may expose that root through an ignored `_data/` symlink for local browsing. See `docs/external-data-layout.md`.
+
 ## Claude Code Configuration
 
 The template ships `.claude/settings.json.example` as a starter for Claude Code's per-project configuration. The two most-used fields are `permissions.allow` (pre-approved Bash patterns) and `permissions.additionalDirectories` (paths outside the repository Claude Code may read). Mirror any external paths through `.env.local`.
@@ -78,6 +80,8 @@ Recommended targets:
 
 Delete targets that truly do not apply, or keep them as documented no-ops if a consistent interface is more useful for the project.
 
+When a project uses `_data/`, `make setup` should verify the external root and create or refresh the ignored `_data/` symlink when practical.
+
 ## Underlying Commands
 
 Document the underlying commands here after adoption.
@@ -122,6 +126,13 @@ For rendered document or notebook-style changes:
 - Prefer rendering the source file without overriding its declared output format.
 - Keep rendered artifacts out of git unless this project intentionally tracks them.
 - Confirm external source files such as data, media, or source documents resolve from documented local config.
+
+For external-data or inbox changes:
+
+- Confirm `_data/` points to the documented external root when needed.
+- Keep `_inbox/` contents and `_data/` ignored by git.
+- Use `docs/inbox-triage.md` before moving incoming files.
+- Refer to external files through the documented environment variable in tracked documentation.
 
 For Markdown-only documentation changes:
 
