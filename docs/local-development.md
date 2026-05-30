@@ -56,6 +56,29 @@ Prefer encoding setup in `make setup` or `make install` once the commands are kn
 
 Before installing new software or packages, confirm that the dependency is needed, fits the project conventions, and will not conflict with the user's local setup. If network access, system-level installation, or writes outside the repository are required, ask for approval through the normal permission flow.
 
+## PDF and Office Document Tools
+
+Projects that inspect PDFs, render PDF pages, extract PDF metadata, convert Microsoft Office or OpenDocument files, or export office documents to PDF should document the relevant local tool paths in `.env.local.example`.
+
+Common variables to adapt during project setup:
+
+| Variable | Purpose |
+| --- | --- |
+| `PROJECT_POPPLER_BIN` | Directory containing Poppler command-line tools, such as `pdfinfo`, `pdftoppm`, and `pdftocairo` |
+| `PROJECT_PDFINFO` | Path to the `pdfinfo` executable for PDF metadata checks |
+| `PROJECT_SOFFICE` | Path to the LibreOffice `soffice` executable for command-line document, spreadsheet, presentation, and PDF conversion |
+| `PROJECT_LIBREOFFICE_APP` | Path to the macOS LibreOffice app bundle when workflows need the Homebrew Cask app |
+
+LibreOffice can open and save Microsoft Office formats, including Word, Excel, and PowerPoint Open XML files. Its Document Converter handles Microsoft Word, Excel, and PowerPoint sources, and the command-line conversion filters include Calc spreadsheet formats and PDF export. Use these capabilities for `.docx`, `.xlsx`, `.pptx`, OpenDocument, and PDF conversion workflows when they fit the project. Complex Office formatting, formulas, charts, macros, and layout features may require visual or automated verification after conversion.
+
+Official references:
+
+- [Using Microsoft Office and LibreOffice](https://help.libreoffice.org/latest/en-GB/text/shared/guide/ms_user.html)
+- [Document Converter](https://help.libreoffice.org/latest/en-GB/text/shared/autopi/01130000.html)
+- [File Conversion Filters Tables](https://help.libreoffice.org/latest/ug/text/shared/guide/convertfilters.html)
+
+On Apple Silicon macOS with Homebrew-managed command-line tools and LibreOffice installed via Homebrew Cask, the common paths are `/opt/homebrew/bin` for Poppler tools, `/opt/homebrew/bin/pdfinfo`, `/opt/homebrew/bin/soffice`, and `/Applications/LibreOffice.app`. Intel Homebrew, conda environments, Linux packages, and manually installed app bundles may use different paths. Put the actual values in `.env.local`, and keep commands and tracked docs pointed at the variable names.
+
 ## Makefile Contract
 
 Create or update `Makefile` when adopting this template. Keep targets small, predictable, and documented by `make help`.
