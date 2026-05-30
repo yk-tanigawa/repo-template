@@ -17,6 +17,8 @@ Good signals include:
 - The project has repeated manual steps that should become scripts, `make` targets, or pipelines.
 - The project has repeated writing or review tasks that should use templates, rubrics, or checklists.
 - A mistake would be hard to notice in review.
+- A source directory starts accumulating repeated procedure text that belongs in `docs/`.
+- The project needs a stable boundary between git-tracked source files and Box, Drive, raw-data, private-data, or other external storage.
 
 ## How Agents Should Help
 
@@ -29,11 +31,13 @@ Useful questions include:
 - Who will run the project, and on which operating systems or platforms?
 - Which use cases matter most: reproducibility, speed, collaboration, deployment, teaching, or exploration?
 - Which data, environment variables, credentials, or external services are required?
+- Which files belong in git, which belong in external storage, and which environment variable names the external root?
 - Could any workflow expose individual-level data or personal information?
 - If individual-level data is involved, what programmatic de-identification procedure should run before analysis, examples, tests, slides, or docs use the data?
 - Which package manager or environment manager best fits those constraints?
 - Which audience will read the writing, and are there style guides, venue instructions, or example documents to follow?
 - Which files are the source of truth?
+- Which received, raw, generated, binary, or sensitive files should stay outside git?
 - Which generated files should stay out of git?
 - Which commands should exist in the `Makefile`?
 - Which repeated manual steps should be automated?
@@ -47,6 +51,10 @@ Useful questions include:
 After the convention is clear, document it in `docs/` and add or update the relevant `Makefile` target if commands are involved.
 
 When the best option depends on a changing tool landscape, search online for current official documentation and reputable sources before recommending a convention. Summarize the tradeoffs for the human maintainer, then document the decision once adopted.
+
+## Base Docs to Adapt
+
+The base template includes `docs/external-data-layout.md` and `docs/inbox-triage.md` because the tracked-source versus external-storage boundary is easy to get wrong. When a project does not use external files, remove or simplify those docs during adoption. When it does, adapt them to the project's actual root variable, external subfolders, and validation commands.
 
 ## Common Project-Specific Docs
 
@@ -85,4 +93,5 @@ When adapting this template to a new repository:
 - Add focused docs for recurring project-specific workflows.
 - Update `README.md` with the project purpose and high-level map.
 - Update `AGENTS.md` so agents know which docs to read first.
+- Decide whether `_inbox/` and `_data/` apply; if they do, document the external root variable in `.env.local.example`.
 - Configure `Makefile` targets for install, dev, build, test, lint, format, and clean as applicable.

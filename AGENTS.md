@@ -32,6 +32,7 @@ When resuming work in this repository:
 - Use paths relative to the repository root in documentation, comments, and handoffs.
 - Do not include machine-local absolute paths in tracked files unless the user explicitly asks for a machine-specific note.
 - Treat tracked source files as the source of truth. Do not commit generated artifacts unless the project documents them as published assets.
+- Keep sensitive, large, received, raw, or machine-local files outside git. Use `_inbox/` only for short-lived intake and `_data/` only as an ignored local link to the documented external root.
 - Keep machine-specific settings in `.env.local`, and keep `.env.local` untracked.
 - Use `Makefile` targets for install, preview, build, test, lint, format, and cleanup tasks when targets exist.
 - When a durable command is missing, help add it to `Makefile` and document it in `docs/local-development.md`.
@@ -55,6 +56,8 @@ When resuming work in this repository:
 - `docs/local-development.md`: `Makefile` targets, environment setup, preview commands, build commands, and validation checklist.
 - `docs/repository-layout.md`: top-level files, path conventions, generated artifacts, and how to document project-specific layout.
 - `docs/related-repositories.md`: ignored `_repos/` symlinks, `.env.local` variables, and boundaries for related local clones.
+- `docs/external-data-layout.md`: separating tracked source files from Box, Drive, raw-data, and other external storage.
+- `docs/inbox-triage.md`: moving unsorted `_inbox/` files into tracked sources or ignored external storage.
 - `docs/project-specific-guidelines.md`: how agents and maintainers should identify and create focused project-specific docs.
 - `docs/manuscript-evaluation.md`: example workflow for evaluating manuscripts and comparing versions; adapt or remove for non-manuscript projects.
 
@@ -78,7 +81,7 @@ When work involves repeated manual steps, follow `docs/automation-guide.md`. Not
 
 ## Privacy and Personal Data
 
-When a project may touch individual-level data or personal information, follow `docs/privacy-guide.md`. Do not put real individual-level data in scripts, slides, examples, tests, fixtures, notebooks, or documentation without explicit human-maintainer approval. Prefer programmatic de-identification over manual agent inspection of raw records. Use role labels (such as "the student") in documentation when names are not necessary.
+When a project may touch individual-level data, personal information, correspondence, source files, or other non-public material, follow `docs/privacy-guide.md`, `docs/external-data-layout.md`, and `docs/inbox-triage.md`. Do not put real individual-level data in scripts, slides, examples, tests, fixtures, notebooks, or documentation without explicit human-maintainer approval. Prefer programmatic de-identification over manual agent inspection of raw records. Use role labels (such as "the student") in documentation when names are not necessary.
 
 ## Environment Behavior
 
