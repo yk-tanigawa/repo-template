@@ -81,10 +81,13 @@ Update this list to match the project. Keep the top-level documentation stable a
 - `TEMPLATE_SOURCE.md`: record of the template version used to initialize or refresh the project
 - `.env.local.example`: documented machine-specific configuration variables
 - `.gitignore`: local config, dependencies, and generated artifacts
+- `_repos/`: optional ignored local symlinks to related repository clones when a project needs cross-repo context
 
 ## Common Tasks
 
 See the Docs Map in `AGENTS.md` for the canonical list of `docs/` files and when to use each. Project-specific docs such as `docs/testing.md`, `docs/publications.md`, `docs/navigation.md`, `docs/team-directory.md`, or `docs/textbook-notes.md` can be added later when the project needs them.
+
+Use `docs/related-repositories.md` when the project needs local context from sibling or upstream repositories through ignored `_repos/` symlinks.
 
 ## Notes for Agents
 

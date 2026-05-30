@@ -20,6 +20,12 @@ Recommended setup flow:
 
 Agents should inspect `.env.local.example` and then check whether `.env.local` exists before environment-dependent work. If `.env.local` exists, inspect it before running `make` targets that may depend on local configuration. Do not print secrets or copy private values into tracked files. If the task depends on local configuration and `.env.local` is missing, ask for missing local values before guessing.
 
+## Related Repositories
+
+When a project needs local context from another repository, expose that clone through an ignored `_repos/[repo-name]` symlink and document its machine-specific path with a variable in `.env.local.example`. See `docs/related-repositories.md` for the convention.
+
+If the related repository is required for normal development, make `make setup` verify both the environment variable and the `_repos/` symlink. If it is optional, document the workflows that need it and avoid making unrelated targets fail when the clone is absent.
+
 ## Claude Code Configuration
 
 The template ships `.claude/settings.json.example` as a starter for Claude Code's per-project configuration. The two most-used fields are `permissions.allow` (pre-approved Bash patterns) and `permissions.additionalDirectories` (paths outside the repository Claude Code may read). Mirror any external paths through `.env.local`.

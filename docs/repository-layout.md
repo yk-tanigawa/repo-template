@@ -12,6 +12,10 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `.env.local.example`: documented local configuration variables.
 - `.gitignore`: local config, dependency folders, and build artifacts.
 
+## Optional Local Entries
+
+- `_repos/`: ignored local symlinks to related repository clones when cross-repo context is needed.
+
 ## Project-Specific Layout
 
 Source directories, asset directories, configuration files, and generated outputs are project-specific. Do not keep a generic framework inventory here after adoption.
@@ -42,6 +46,12 @@ Use repository-relative paths in docs and handoffs, such as `README.md`, `AGENTS
 Use project-native relative paths for source references. If the project generates a website or package, document public URL or import-path conventions in a project-specific doc.
 
 Avoid absolute local paths in tracked files. Put local roots in `.env.local` and reference them through documented variables.
+
+## Related Repositories
+
+Use `_repos/` for ignored local symlinks to related repository clones when a project needs cross-repo context. Document the purpose, environment variable, and source-of-truth boundary for each related clone in `docs/related-repositories.md` or a focused project-specific doc.
+
+Do not commit `_repos/` entries. Keep machine-local clone paths in `.env.local`, and keep tracked docs pointed at repository-relative symlink paths such as `_repos/[repo-name]` or documented environment variables.
 
 ## Generated Files
 

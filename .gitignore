@@ -6,5 +6,6 @@
 # Local machine-specific config (always ignored)
 .env.local
 .claude/settings.local.json
+/_repos/
 
 # Project-specific generated outputs (add after adoption):

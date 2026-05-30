@@ -54,6 +54,7 @@ When resuming work in this repository:
 - `docs/template-adoption.md`: recording the source template version and catching up with upstream template changes.
 - `docs/local-development.md`: `Makefile` targets, environment setup, preview commands, build commands, and validation checklist.
 - `docs/repository-layout.md`: top-level files, path conventions, generated artifacts, and how to document project-specific layout.
+- `docs/related-repositories.md`: ignored `_repos/` symlinks, `.env.local` variables, and boundaries for related local clones.
 - `docs/project-specific-guidelines.md`: how agents and maintainers should identify and create focused project-specific docs.
 - `docs/manuscript-evaluation.md`: example workflow for evaluating manuscripts and comparing versions; adapt or remove for non-manuscript projects.
 
