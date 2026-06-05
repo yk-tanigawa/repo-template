@@ -6,7 +6,10 @@
 # Local machine-specific config (always ignored)
 .env.local
 .claude/settings.local.json
-/_repos/
+
+# Related repository symlinks. Keep only the tracked README.
+/_repos/*
+!/_repos/README.md
 
 # Short-lived local intake folder. Contents are ignored because incoming files
 # may be sensitive, large, generated, prior versions, or raw data. Keep only the

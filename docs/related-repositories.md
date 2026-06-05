@@ -6,33 +6,44 @@ This convention is for local context and source references. If another repositor
 
 ## Convention
 
-Use `_repos/` for ignored local symlinks to related repository clones. Each entry should point to an existing clone on the current machine, such as `_repos/[repo-name]`.
+Use `_repos/` for ignored local symlinks to related repository clones. Each entry should point to an existing clone on the current machine, such as `_repos/[repo-name]`. The template tracks `_repos/README.md` so the directory exists in fresh clones and carries local-use guidance. All other `_repos/` entries are ignored.
 
-Keep `_repos/` out of git. Treat the related repository as an external source of truth. Do not copy files from a related repository into tracked files here unless the project explicitly needs a local copy and the human maintainer confirms it is appropriate.
+Keep related repository entries out of git. Treat each related repository as an external source of truth. Do not copy files from a related repository into tracked files here unless the project explicitly needs a local copy and the human maintainer confirms it is appropriate.
 
-Document each related clone path in `.env.local.example` with a project-specific variable, such as:
+Document each related clone path in `.env.local.example` with a project-specific variable. Then list the `_repos/` link name and variable name in `PROJECT_RELATED_REPOS`:
 
 ```bash
-# PROJECT_EXAMPLE_REPO=    # path to the related repository clone
+# PROJECT_EXAMPLE_REPO=       # path to the related repository clone
+# PROJECT_RELATED_REPOS=example:PROJECT_EXAMPLE_REPO
 ```
 
 The actual machine path belongs in `.env.local`, which is ignored. Tracked docs should refer to the local symlink path, the environment variable, or a repository URL rather than a machine-local absolute path.
+
+Use one `PROJECT_RELATED_REPOS` entry per related clone. The entry format is `link-name:ENV_VAR`, where `link-name` becomes `_repos/link-name` and `ENV_VAR` stores the machine-local clone path. Link names should be plain directory names without slashes or leading dots.
 
 ## Setup
 
 For each related repository:
 
 1. Add a commented variable to `.env.local.example`.
-2. Add the real clone path to `.env.local`.
-3. Create a local symlink under `_repos/`.
-4. Document why the project needs the related repository and which files are source of truth.
-5. Update `make setup` or another documented check if the link is required for normal work.
+2. Add or update `PROJECT_RELATED_REPOS` in `.env.local.example`.
+3. Add the real clone path to `.env.local`.
+4. Run `make setup` to create or refresh the local symlink under `_repos/`.
+5. Confirm `git status --short` does not show the local symlink.
+6. Document why the project needs the related repository and which files are source of truth.
+7. Update project-specific setup checks if the related repository is required for normal work.
 
-Example local setup:
+Example `.env.local` entries:
 
 ```bash
-mkdir -p _repos
-ln -s "$PROJECT_EXAMPLE_REPO" _repos/[repo-name]
+PROJECT_EXAMPLE_REPO=/path/to/example
+PROJECT_RELATED_REPOS=example:PROJECT_EXAMPLE_REPO
+```
+
+Then run:
+
+```bash
+make setup
 ```
 
 If the related repository is optional, document which workflows need it and let unrelated `make` targets run without it.

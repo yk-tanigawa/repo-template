@@ -24,9 +24,11 @@ If the project uses an external Box, Drive, raw-data, private-data, or other ext
 
 ## Related Repositories
 
-When a project needs local context from another repository, expose that clone through an ignored `_repos/[repo-name]` symlink and document its machine-specific path with a variable in `.env.local.example`. See `docs/related-repositories.md` for the convention.
+When a project needs local context from another repository, expose that clone through an ignored `_repos/[repo-name]` symlink and document its machine-specific path with a variable in `.env.local.example`. The template keeps `_repos/README.md` tracked so fresh clones have the directory and its local-use guidance, while all local symlinks under `_repos/` remain ignored.
 
-If the related repository is required for normal development, make `make setup` verify both the environment variable and the `_repos/` symlink. If it is optional, document the workflows that need it and avoid making unrelated targets fail when the clone is absent.
+List configured links in `PROJECT_RELATED_REPOS` as `link-name:ENV_VAR` entries, where `link-name` is the `_repos/` entry and `ENV_VAR` is the variable that stores the clone path. For example, `PROJECT_RELATED_REPOS=example:PROJECT_EXAMPLE_REPO` creates or refreshes `_repos/example` from `$PROJECT_EXAMPLE_REPO` when `make setup` runs.
+
+If the related repository is required for normal development, include it in `PROJECT_RELATED_REPOS` and let `make setup` verify the target. If it is optional, document the workflows that need it and avoid making unrelated targets fail when the clone is absent.
 
 ## Claude Code Configuration
 
@@ -109,7 +111,7 @@ Recommended targets:
 
 Delete targets that truly do not apply, or keep them as documented no-ops if a consistent interface is more useful for the project.
 
-When a project uses `_data/`, `make setup` should verify the external root and create or refresh the ignored `_data/` symlink when practical.
+When a project uses `_data/`, `make setup` should verify the external root and create or refresh the ignored `_data/` symlink when practical. When a project uses `_repos/`, `make setup` should verify each configured related clone and create or refresh the ignored `_repos/[repo-name]` symlink.
 
 ## Underlying Commands
 
@@ -117,6 +119,7 @@ Document the underlying commands here after adoption.
 
 | Make target | Underlying command | Notes |
 | --- | --- | --- |
+| `make setup` | Create or refresh configured `_data/` and `_repos/` symlinks, then run project-specific setup checks | Add required local variables to `.env.local.example` before adoption |
 | `make install` | `[install command]` | `[dependency notes]` |
 | `make dev` | `[dev command]` | `[preview URL or behavior]` |
 | `make build` | `[build command]` | `[output location]` |
@@ -159,7 +162,8 @@ For rendered document or notebook-style changes:
 For external-data or inbox changes:
 
 - Confirm `_data/` points to the documented external root when needed.
-- Keep `_inbox/` contents and `_data/` ignored by git.
+- Confirm `_repos/[repo-name]` points to the documented related clone when cross-repo context is needed.
+- Keep `_inbox/` contents, `_data/`, and `_repos/` entries other than `_repos/README.md` ignored by git.
 - Use `docs/inbox-triage.md` before moving incoming files.
 - Refer to external files through the documented environment variable in tracked documentation.
 

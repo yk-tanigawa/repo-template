@@ -41,6 +41,8 @@ Use `make` as the project command interface. The `Makefile` should define the co
 
 Before running `make` targets that depend on local paths, credentials, external data, or rendering tools, inspect `.env.local.example` and check whether `.env.local` is configured. Machine-specific values such as local Python paths, conda environment names, Box or Drive roots, API keys, and private data roots should live in `.env.local`. Track `.env.local.example` as documentation and keep `.env.local` untracked.
 
+When the project needs local context from another clone, keep that clone path in `.env.local`, list it in `PROJECT_RELATED_REPOS`, and expose it through the tracked `_repos/` directory as an ignored symlink. Run `make setup` to create or refresh configured `_repos/` links.
+
 Common targets:
 
 ```bash
@@ -82,10 +84,10 @@ Update this list to match the project. Keep the top-level documentation stable a
 - `docs/`: maintainer notes and durable conventions
 - `_inbox/`: short-lived local intake area for unsorted files; contents are ignored except `_inbox/README.md`
 - `_data/`: optional per-machine symlink to an external Box, Drive, or data root; ignored by git
+- `_repos/`: tracked README plus ignored local symlinks to related repository clones when a project needs cross-repo context
 - `TEMPLATE_SOURCE.md`: record of the template version used to initialize or refresh the project
 - `.env.local.example`: documented machine-specific configuration variables
 - `.gitignore`: local config, dependencies, and generated artifacts
-- `_repos/`: optional ignored local symlinks to related repository clones when a project needs cross-repo context
 
 ## Common Tasks
 

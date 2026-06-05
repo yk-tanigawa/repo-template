@@ -8,6 +8,8 @@ Projects that start from this template should record the exact template version 
 
 The project should keep that record in `TEMPLATE_SOURCE.md`.
 
+Adopted projects may also keep a local path to this template clone in `.env.local` as `PROJECT_TEMPLATE_REPO`. If template updates are a recurring workflow, add a project-specific `make setup` check or equivalent command that verifies `PROJECT_TEMPLATE_REPO` points to a local git worktree.
+
 ## Initial Adoption
 
 When creating a new project from this template:
@@ -16,7 +18,8 @@ When creating a new project from this template:
 2. Fill in `TEMPLATE_SOURCE.md`.
 3. Record the template repository and identifier.
 4. Record the adoption date and copied or adapted files.
-5. Commit the initial project setup.
+5. Confirm `.env.local.example` documents `PROJECT_TEMPLATE_REPO` when the project will compare against a local template clone.
+6. Commit the initial project setup.
 
 If the template source is a git repository, use the source commit hash:
 
@@ -40,14 +43,15 @@ Recommended update process:
 6. Run the relevant validation target, usually `make build`, `make test`, or a documentation review.
 7. Append an entry to the `Template Update Log` in `TEMPLATE_SOURCE.md`.
 
-If the template is available in a local git clone, useful comparison commands include:
+If the template is available in a local git clone, keep its path in `PROJECT_TEMPLATE_REPO`. Downstream projects can expose these checks through `make setup`, `make template-status`, or another documented local command. Useful comparison commands include:
 
 ```bash
-git log --oneline [old-template-id]..[new-template-id]
-git diff [old-template-id]..[new-template-id] -- README.md AGENTS.md docs Makefile .env.local.example .gitignore TEMPLATE_SOURCE.md
+git -C "$PROJECT_TEMPLATE_REPO" rev-parse HEAD
+git -C "$PROJECT_TEMPLATE_REPO" log --oneline [old-template-id]..[new-template-id]
+git -C "$PROJECT_TEMPLATE_REPO" diff [old-template-id]..[new-template-id] -- README.md AGENTS.md docs Makefile .env.local.example .gitignore TEMPLATE_SOURCE.md _repos/README.md
 ```
 
-Run those commands in the template repository, then apply relevant changes to the downstream project with normal review.
+Apply relevant changes to the downstream project with normal review.
 
 ## Updating the Template From Examples
 

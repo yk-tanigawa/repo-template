@@ -10,13 +10,10 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `docs/`: maintainer notes for durable conventions.
 - `_inbox/`: short-lived intake folder for unsorted files; contents are ignored except `_inbox/README.md`.
 - `_data/`: optional per-machine symlink to a Box, Drive, or external data root; ignored by git.
+- `_repos/`: tracked README plus ignored local symlinks to related repository clones when cross-repo context is needed.
 - `TEMPLATE_SOURCE.md`: template source identifier and update history.
 - `.env.local.example`: documented local configuration variables.
 - `.gitignore`: local config, dependency folders, and build artifacts.
-
-## Optional Local Entries
-
-- `_repos/`: ignored local symlinks to related repository clones when cross-repo context is needed.
 
 ## Project-Specific Layout
 
@@ -59,9 +56,9 @@ Use `_data/` only as an ignored local convenience path. Tracked documentation an
 
 ## Related Repositories
 
-Use `_repos/` for ignored local symlinks to related repository clones when a project needs cross-repo context. Document the purpose, environment variable, and source-of-truth boundary for each related clone in `docs/related-repositories.md` or a focused project-specific doc.
+Use `_repos/` for ignored local symlinks to related repository clones when a project needs cross-repo context. Keep `_repos/README.md` tracked and keep clone paths in `.env.local`. Document the purpose, environment variable, setup entry, and source-of-truth boundary for each related clone in `docs/related-repositories.md` or a focused project-specific doc.
 
-Do not commit `_repos/` entries. Keep machine-local clone paths in `.env.local`, and keep tracked docs pointed at repository-relative symlink paths such as `_repos/[repo-name]` or documented environment variables.
+Do not commit `_repos/` entries other than `_repos/README.md`. Keep machine-local clone paths in `.env.local`, and keep tracked docs pointed at repository-relative symlink paths such as `_repos/[repo-name]` or documented environment variables.
 
 ## External and Intake Files
 
