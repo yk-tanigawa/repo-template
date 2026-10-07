@@ -14,12 +14,16 @@ Adopted projects may also keep a local path to this template clone in `.env.loca
 
 When creating a new project from this template:
 
-1. Copy the template files into the new project.
+1. Create the repository with the GitHub "Use this template" button, or copy the template files into an existing project.
 2. Fill in `TEMPLATE_SOURCE.md`.
 3. Record the template repository and identifier.
 4. Record the adoption date and copied or adapted files.
 5. Confirm `.env.local.example` documents `PROJECT_TEMPLATE_REPO` when the project will compare against a local template clone.
-6. Commit the initial project setup.
+6. Choose a license for the new project and add it as `LICENSE`.
+7. Delete the "About This Template" section from `README.md`, which describes the template repository rather than the adopting project.
+8. Commit the initial project setup.
+
+The template is published under MIT No Attribution, which imposes no conditions on adopted projects. An adopted project picks its own license and does not need to carry the template's `LICENSE` file, reproduce its copyright notice, or credit the template. `TEMPLATE_SOURCE.md` records provenance for maintenance purposes, which is independent of any license obligation.
 
 If the template source is a git repository, use the source commit hash:
 
