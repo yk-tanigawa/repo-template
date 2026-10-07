@@ -6,7 +6,7 @@ Agents and maintainers should prefer `make` targets over rediscovering framework
 
 ## Environment Files
 
-Use `.env.local` for machine-specific values such as local Python paths, conda environment names, Box or Drive roots, private data roots, API keys, or local executable overrides.
+Use `.env.local` for non-secret machine-specific values such as local Python paths, conda environment names, Box or Drive roots, private data roots, or local executable overrides.
 
 Track `.env.local.example` as documentation. Do not track `.env.local`.
 
@@ -19,6 +19,10 @@ Recommended setup flow:
 5. Run the smallest validation command that confirms the environment is ready.
 
 Agents should inspect `.env.local.example` and then check whether `.env.local` exists before environment-dependent work. If `.env.local` exists, inspect it before running `make` targets that may depend on local configuration. Do not print secrets or copy private values into tracked files. If the task depends on local configuration and `.env.local` is missing, ask for missing local values before guessing.
+
+Keep credentials out of `.env.local`. `Makefile` includes the file and exports its variables, so every value reaches the environment of every command a `make` target runs, including subprocesses and any tool those commands invoke. The file is also plaintext on the local filesystem, and agents are instructed to inspect it before environment-dependent work. That is all acceptable for paths, environment names, and data roots, and it is the wrong handling for a secret.
+
+Store API keys, tokens, and passwords with the mechanism the tool already provides, such as its own login command, a credential helper, a system keychain, or a secret manager. If a project genuinely needs a credential in a file, keep it in a separate untracked file that `Makefile` does not include, source it from only the one recipe that needs it, restrict it with `chmod 600`, and document which target needs it and why in a project-specific doc.
 
 If the project uses an external Box, Drive, raw-data, private-data, or other external root, document the root variable in `.env.local.example` and keep the private value in `.env.local`. Projects may expose that root through an ignored `_data/` symlink for local browsing. See `docs/external-data-layout.md`.
 
@@ -87,7 +91,20 @@ Official references:
 - [Document Converter](https://help.libreoffice.org/latest/en-GB/text/shared/autopi/01130000.html)
 - [File Conversion Filters Tables](https://help.libreoffice.org/latest/ug/text/shared/guide/convertfilters.html)
 
-On Apple Silicon macOS with Homebrew-managed command-line tools and LibreOffice installed via Homebrew Cask, the common paths are `/opt/homebrew/bin` for Poppler tools, `/opt/homebrew/bin/pdfinfo`, `/opt/homebrew/bin/soffice`, and `/Applications/LibreOffice.app`. Intel Homebrew, conda environments, Linux packages, and manually installed app bundles may use different paths. Put the actual values in `.env.local`, and keep commands and tracked docs pointed at the variable names.
+This template was first developed on macOS, so the example values in `.env.local.example` and below are macOS paths. They are illustrations of the variable format, not defaults, and no `make` target depends on them.
+
+On Apple Silicon macOS with Homebrew-managed command-line tools and LibreOffice installed via Homebrew Cask, the common paths are `/opt/homebrew/bin` for Poppler tools, `/opt/homebrew/bin/pdfinfo`, `/opt/homebrew/bin/soffice`, and `/Applications/LibreOffice.app`. Intel Homebrew uses `/usr/local/bin` instead.
+
+On Linux, including shared compute clusters, these tools usually come from the system package manager, a conda environment, or an environment module, so paths such as `/usr/bin/pdfinfo`, `/usr/bin/soffice`, or a path under the active conda prefix are more likely. `PROJECT_LIBREOFFICE_APP` points at a macOS application bundle and should be left unset on Linux.
+
+Resolve the actual locations on the current machine before filling in `.env.local`:
+
+```bash
+command -v pdfinfo
+command -v soffice
+```
+
+Put the resolved values in `.env.local`, and keep commands and tracked docs pointed at the variable names.
 
 ## Makefile Contract
 

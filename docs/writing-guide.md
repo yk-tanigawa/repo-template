@@ -28,6 +28,7 @@ These defaults apply to documentation, generated prose, project memos, and chat 
 - Avoid em dashes. They often hide structure that should be made explicit with a period.
 - Use explicit ISO dates such as `2026-04-19` when recording project status, manuscript versions, or correspondence.
 - Preserve standard scientific formatting such as `APOE` for gene symbols even in plain Markdown.
+- Use soft wrap rather than hard wrap in Markdown and other prose source files. Keep each paragraph on one source line and let the editor or viewer wrap it. Hard-wrapped paragraphs produce noisy diffs, because editing one sentence rewraps every line after it, which makes review harder and obscures the real change.
 
 ## Single Source of Truth
 

@@ -2,6 +2,20 @@
 
 This repository contains [short description of the project]. It is structured so human maintainers and AI agents can understand the project purpose, source files, local commands, and content conventions from the repository itself.
 
+## About This Template
+
+Delete this section after adopting the template into a project. It describes the template repository itself, not the adopting project.
+
+- Maintainer: Yosuke Tanigawa.
+- License: MIT No Attribution (`MIT-0`). See `LICENSE`.
+- Canonical source: the `yk-tanigawa/repo-template` repository on GitHub.
+
+To adopt it, create a repository with the GitHub "Use this template" button or copy the tracked files into an existing project, then follow the initial adoption steps in `docs/template-adoption.md` and the adoption checklist in `docs/project-specific-guidelines.md`.
+
+Adopted projects choose their own license. MIT-0 imposes no conditions, so there is no obligation to carry this template's `LICENSE` file, reproduce its copyright notice, or credit the template.
+
+Improvements are welcome as pull requests on the GitHub repository. When an improvement comes from a real project, generalize it first with the de-contamination pass in `docs/template-adoption.md`, so project names, institutions, local paths, and domain-specific details do not reach the template.
+
 ## What This Repo Is For
 
 Use this section to define the project in one or two paragraphs. State what belongs in the repository, what should stay outside the repository, and which files are the source of truth.
@@ -39,7 +53,7 @@ Delete this section if the repository is not hosted.
 
 Use `make` as the project command interface. The `Makefile` should define the common commands so humans and agents do not have to rediscover framework-specific commands on each machine.
 
-Before running `make` targets that depend on local paths, credentials, external data, or rendering tools, inspect `.env.local.example` and check whether `.env.local` is configured. Machine-specific values such as local Python paths, conda environment names, Box or Drive roots, API keys, and private data roots should live in `.env.local`. Track `.env.local.example` as documentation and keep `.env.local` untracked.
+Before running `make` targets that depend on local paths, credentials, external data, or rendering tools, inspect `.env.local.example` and check whether `.env.local` is configured. Non-secret machine-specific values such as local Python paths, conda environment names, Box or Drive roots, and private data roots should live in `.env.local`. Keep credentials out of it and use the relevant tool's own credential storage instead, as described in `docs/local-development.md`. Track `.env.local.example` as documentation and keep `.env.local` untracked.
 
 When the project needs local context from another clone, keep that clone path in `.env.local`, list it in `PROJECT_RELATED_REPOS`, and expose it through the tracked `_repos/` directory as an ignored symlink. Run `make setup` to create or refresh configured `_repos/` links.
 
@@ -85,6 +99,7 @@ Update this list to match the project. Keep the top-level documentation stable a
 - `_inbox/`: short-lived local intake area for unsorted files; contents are ignored except `_inbox/README.md`
 - `_data/`: optional per-machine symlink to an external Box, Drive, or data root; ignored by git
 - `_repos/`: tracked README plus ignored local symlinks to related repository clones when a project needs cross-repo context
+- `LICENSE`: project license; adopted projects choose their own
 - `TEMPLATE_SOURCE.md`: record of the template version used to initialize or refresh the project
 - `.env.local.example`: documented machine-specific configuration variables
 - `.gitignore`: local config, dependencies, and generated artifacts

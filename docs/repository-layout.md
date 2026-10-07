@@ -11,6 +11,7 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `_inbox/`: short-lived intake folder for unsorted files; contents are ignored except `_inbox/README.md`.
 - `_data/`: optional per-machine symlink to a Box, Drive, or external data root; ignored by git.
 - `_repos/`: tracked README plus ignored local symlinks to related repository clones when cross-repo context is needed.
+- `LICENSE`: the project's own license. The template is published under MIT No Attribution, and an adopted project chooses its own terms.
 - `TEMPLATE_SOURCE.md`: template source identifier and update history.
 - `.env.local.example`: documented local configuration variables.
 - `.gitignore`: local config, dependency folders, and build artifacts.
