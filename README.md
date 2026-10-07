@@ -39,7 +39,7 @@ Delete this section if the repository is not hosted.
 
 Use `make` as the project command interface. The `Makefile` should define the common commands so humans and agents do not have to rediscover framework-specific commands on each machine.
 
-Before running `make` targets that depend on local paths, credentials, external data, or rendering tools, inspect `.env.local.example` and check whether `.env.local` is configured. Machine-specific values such as local Python paths, conda environment names, Box or Drive roots, API keys, and private data roots should live in `.env.local`. Track `.env.local.example` as documentation and keep `.env.local` untracked.
+Before running `make` targets that depend on local paths, credentials, external data, or rendering tools, inspect `.env.local.example` and check whether `.env.local` is configured. Non-secret machine-specific values such as local Python paths, conda environment names, Box or Drive roots, and private data roots should live in `.env.local`. Keep credentials out of it and use the relevant tool's own credential storage instead, as described in `docs/local-development.md`. Track `.env.local.example` as documentation and keep `.env.local` untracked.
 
 When the project needs local context from another clone, keep that clone path in `.env.local`, list it in `PROJECT_RELATED_REPOS`, and expose it through the tracked `_repos/` directory as an ignored symlink. Run `make setup` to create or refresh configured `_repos/` links.
 
