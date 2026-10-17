@@ -47,7 +47,7 @@ When resuming work in this repository:
 ## Docs Map
 
 - `docs/writing-guide.md`: general prose, structure, links, paths, placeholders, and documentation checks.
-- `docs/integrity.md`: source hierarchy and claim-checking rules for scientific or scholarly content.
+- `docs/integrity.md`: accurate claims and honest reports of work for every project, plus source hierarchy and citation checks for scientific or scholarly content.
 - `docs/testing-guide.md`: test-driven development principles, test scenarios, `make test`, and minimum build checks.
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.
 - `docs/automation-guide.md`: repeated work, scripts, `make` targets, pipelines, and consistency improvements.
@@ -69,7 +69,7 @@ Follow `docs/agent-instructions.md` when editing agent-facing instructions. Keep
 
 ## Writing and Sourcing
 
-For prose and documentation changes, follow `docs/writing-guide.md`. For scientific, scholarly, clinical, biomedical, statistical, or data-driven claims, also follow `docs/integrity.md`. Prefer primary literature, official organization pages, project-owned pages, and source documents already tracked by the repository. Use PubMed or PubMed Central for biomedical references when relevant.
+For prose and documentation changes, follow `docs/writing-guide.md`. For any factual claim, including reports of completed work, follow `docs/integrity.md`. For scientific, scholarly, clinical, biomedical, statistical, or data-driven claims, also follow its "Scientific and Scholarly Claims" section. Prefer primary literature, official organization pages, project-owned pages, and source documents already tracked by the repository. Use PubMed or PubMed Central for biomedical references when relevant.
 
 ## Testing Discipline
 
@@ -107,6 +107,7 @@ When handing work back to the user:
 
 - Summarize the files changed.
 - Mention validation performed.
+- Name the evidence for each reported action, and report anything unconfirmed or skipped as such. See "Reporting What Was Done" in `docs/integrity.md`.
 - Mention any remaining placeholders, missing local configuration, or follow-up checks.
 
 Do not assume context outside the repository unless it is documented in `README.md`, this file, `docs/`, or the user explicitly provides it.

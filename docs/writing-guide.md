@@ -18,6 +18,8 @@ Use concrete nouns and verbs. Prefer "Run `make build` before opening a pull req
 
 Adapt the style to the intended use case. A lab website, API reference, scientific report, textbook note, grant text, and internal runbook may need different levels of detail, formality, citation, and assumed background.
 
+Accuracy comes before style. Follow `docs/integrity.md` for factual claims and for reports of completed work in handoffs, issue comments, and pull requests.
+
 ## Sentence and Paragraph Style
 
 These defaults apply to documentation, generated prose, project memos, and chat responses. Adopted projects can override them when a venue style guide demands otherwise.
