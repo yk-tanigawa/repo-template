@@ -68,6 +68,8 @@ Examples include:
 - paper summary templates
 - project proposal templates
 
+For issue bodies and progress comments on an issue tracker, follow `docs/issue-comments.md`.
+
 When preparing or reviewing a manuscript draft, consider creating a manuscript evaluation document with stable criteria. Reusing the same criteria helps evaluate writing quality consistently across drafts, sections, projects, and reviewers.
 
 Good templates should state:

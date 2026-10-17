@@ -47,6 +47,7 @@ When resuming work in this repository:
 ## Docs Map
 
 - `docs/writing-guide.md`: general prose, structure, links, paths, placeholders, and documentation checks.
+- `docs/issue-comments.md`: issue bodies, progress comments, status words, and next-action ownership on issue trackers.
 - `docs/integrity.md`: accurate claims and honest reports of work for every project, plus source hierarchy and citation checks for scientific or scholarly content.
 - `docs/testing-guide.md`: test-driven development principles, test scenarios, `make test`, and minimum build checks.
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.
