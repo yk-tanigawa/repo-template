@@ -14,7 +14,7 @@ This workflow draws on manuscript-structure best practices from Mensh and Kordin
 2. Read the current cover letter when journal positioning or framing is relevant.
 3. When a previous version or prior submission package is available and relevant, compare against that earlier version rather than relying on memory.
 4. When available, read prior editorial correspondence, submission notes, and planning notes to understand the reason for revision.
-5. Prefer the manuscript text and submission artifacts over repository-level summaries when assessing scientific content. See `docs/scientific-integrity.md` on avoiding self-anchoring.
+5. Prefer the manuscript text and submission artifacts over repository-level summaries when assessing scientific content. See `docs/integrity.md` on avoiding self-anchoring.
 
 ## Comparison Workflow
 

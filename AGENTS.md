@@ -41,6 +41,7 @@ When resuming work in this repository:
 - When relevant best practices may have changed, search online for current official documentation and reputable sources before recommending or adopting a toolchain, repository convention, or writing standard.
 - Preserve existing content and naming conventions unless the user asks for a rewrite or migration.
 - Prefer small, coherent edits over broad rewrites.
+- Use soft wrap in Markdown and other prose files: one paragraph per source line. See `docs/writing-guide.md`.
 - Do not invent facts, affiliations, announcements, citations, dates, or scientific claims.
 - For current factual or scientific claims, verify against trusted sources before updating public-facing content.
 - Update the relevant docs when you introduce a new durable convention.
@@ -48,9 +49,9 @@ When resuming work in this repository:
 ## Docs Map
 
 - `docs/writing-guide.md`: general prose, structure, links, paths, references to private repositories, placeholders, and documentation checks.
-- `docs/review-comments.md`: acknowledging review comments on issues and pull requests, then replacing the reply with the result.
+- `docs/issue-comments.md`: issue bodies, progress comments, status words, next-action ownership, and replies to review comments on issues and pull requests.
 - `docs/public-release.md`: checklist for making a private repository public by publishing a history-free snapshot.
-- `docs/scientific-integrity.md`: source hierarchy and claim-checking rules for scientific or scholarly content.
+- `docs/integrity.md`: accurate claims and honest reports of work for every project, plus source hierarchy and citation checks for scientific or scholarly content.
 - `docs/testing-guide.md`: test-driven development principles, test scenarios, `make test`, and minimum build checks.
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.
 - `docs/automation-guide.md`: repeated work, scripts, `make` targets, pipelines, and consistency improvements.
@@ -72,7 +73,7 @@ Follow `docs/agent-instructions.md` when editing agent-facing instructions. Keep
 
 ## Writing and Sourcing
 
-For prose and documentation changes, follow `docs/writing-guide.md`. For scientific, scholarly, clinical, biomedical, statistical, or data-driven claims, also follow `docs/scientific-integrity.md`. Prefer primary literature, official organization pages, project-owned pages, and source documents already tracked by the repository. Use PubMed or PubMed Central for biomedical references when relevant.
+For prose and documentation changes, follow `docs/writing-guide.md`. For any factual claim, including reports of completed work, follow `docs/integrity.md`. For scientific, scholarly, clinical, biomedical, statistical, or data-driven claims, also follow its "Scientific and Scholarly Claims" section. Prefer primary literature, official organization pages, project-owned pages, and source documents already tracked by the repository. Use PubMed or PubMed Central for biomedical references when relevant.
 
 ## Testing Discipline
 
@@ -110,6 +111,8 @@ When handing work back to the user:
 
 - Summarize the files changed.
 - Mention validation performed.
+- Name the evidence for each reported action, and report anything unconfirmed or skipped as such. See "Reporting What Was Done" in `docs/integrity.md`.
 - Mention any remaining placeholders, missing local configuration, or follow-up checks.
+- State whether you added an agent feedback note, following `agent-feedback/README.md`.
 
 Do not assume context outside the repository unless it is documented in `README.md`, this file, `docs/`, or the user explicitly provides it.

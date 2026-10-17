@@ -14,12 +14,16 @@ Adopted projects may also keep a local path to this template clone in `.env.loca
 
 When creating a new project from this template:
 
-1. Copy the template files into the new project.
+1. Create the repository with the GitHub "Use this template" button, or copy the template files into an existing project.
 2. Fill in `TEMPLATE_SOURCE.md`.
 3. Record the template repository and identifier.
 4. Record the adoption date and copied or adapted files.
 5. Confirm `.env.local.example` documents `PROJECT_TEMPLATE_REPO` when the project will compare against a local template clone.
-6. Commit the initial project setup.
+6. Choose a license for the new project and add it as `LICENSE`.
+7. Delete the "About This Template" section from `README.md`, which describes the template repository rather than the adopting project.
+8. Commit the initial project setup.
+
+The template is published under MIT No Attribution, which imposes no conditions on adopted projects. An adopted project picks its own license and does not need to carry the template's `LICENSE` file, reproduce its copyright notice, or credit the template. `TEMPLATE_SOURCE.md` records provenance for maintenance purposes, which is independent of any license obligation.
 
 If the template source is a git repository, use the source commit hash:
 
@@ -37,7 +41,7 @@ Recommended update process:
 
 1. Read `TEMPLATE_SOURCE.md` to identify the current template baseline.
 2. Identify the latest template identifier to review.
-3. Compare the old and new template versions.
+3. Compare the old and new template versions, and check [Renamed and Removed Files](#renamed-and-removed-files) for entries newer than the baseline.
 4. Decide which upstream changes apply to the project.
 5. Adapt the selected changes into the project.
 6. Run the relevant validation target, usually `make build`, `make test`, or a documentation review.
@@ -48,10 +52,18 @@ If the template is available in a local git clone, keep its path in `PROJECT_TEM
 ```bash
 git -C "$PROJECT_TEMPLATE_REPO" rev-parse HEAD
 git -C "$PROJECT_TEMPLATE_REPO" log --oneline [old-template-id]..[new-template-id]
-git -C "$PROJECT_TEMPLATE_REPO" diff [old-template-id]..[new-template-id] -- README.md AGENTS.md docs Makefile .env.local.example .gitignore TEMPLATE_SOURCE.md _repos/README.md
+git -C "$PROJECT_TEMPLATE_REPO" diff [old-template-id]..[new-template-id] -- README.md AGENTS.md docs agent-feedback/README.md Makefile .env.local.example .gitignore TEMPLATE_SOURCE.md _repos/README.md
 ```
 
 Apply relevant changes to the downstream project with normal review.
+
+## Renamed and Removed Files
+
+A diff can make a renamed file look like a deletion plus a new file. This list records every template file that was renamed or removed, newest first, so a downstream project can carry its own copy forward instead of dropping it. Add an entry whenever the template renames or removes a file, and update the references in the same change.
+
+| Date | Change | What a downstream project does |
+| --- | --- | --- |
+| 2026-10-16 | Renamed `docs/scientific-integrity.md` to `docs/integrity.md`. The doc now also holds integrity rules for every project, and its scientific material sits under one section. | Rename the local copy, then update references with `grep -rn scientific-integrity .`. A project without scientific content trims the "Scientific and Scholarly Claims" section and keeps the rest. |
 
 ## Updating the Template From Examples
 

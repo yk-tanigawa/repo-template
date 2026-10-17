@@ -8,9 +8,11 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `AGENTS.md`: agent-specific operating rules and handoff behavior.
 - `Makefile`: stable command interface for humans and agents.
 - `docs/`: maintainer notes for durable conventions.
+- `agent-feedback/`: optional tracked folder of unreviewed agent friction notes, reviewed by the maintainer in batches; see `agent-feedback/README.md`.
 - `_inbox/`: short-lived intake folder for unsorted files; contents are ignored except `_inbox/README.md`.
 - `_data/`: optional per-machine symlink to a Box, Drive, or external data root; ignored by git.
 - `_repos/`: tracked README plus ignored local symlinks to related repository clones when cross-repo context is needed.
+- `LICENSE`: the project's own license. The template is published under MIT No Attribution, and an adopted project chooses its own terms.
 - `TEMPLATE_SOURCE.md`: template source identifier and update history.
 - `.env.local.example`: documented local configuration variables.
 - `.gitignore`: local config, dependency folders, and build artifacts.
