@@ -40,6 +40,7 @@ When resuming work in this repository:
 - When relevant best practices may have changed, search online for current official documentation and reputable sources before recommending or adopting a toolchain, repository convention, or writing standard.
 - Preserve existing content and naming conventions unless the user asks for a rewrite or migration.
 - Prefer small, coherent edits over broad rewrites.
+- Use soft wrap in Markdown and other prose files: one paragraph per source line. See `docs/writing-guide.md`.
 - Do not invent facts, affiliations, announcements, citations, dates, or scientific claims.
 - For current factual or scientific claims, verify against trusted sources before updating public-facing content.
 - Update the relevant docs when you introduce a new durable convention.
