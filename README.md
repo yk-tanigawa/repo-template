@@ -96,6 +96,7 @@ Update this list to match the project. Keep the top-level documentation stable a
 - `README.md`: project overview, workflow, and high-level layout
 - `Makefile`: stable command interface for humans and agents
 - `docs/`: maintainer notes and durable conventions
+- `agent-feedback/`: optional tracked notes from agents about repository friction, reviewed in batches; see `agent-feedback/README.md`
 - `_inbox/`: short-lived local intake area for unsorted files; contents are ignored except `_inbox/README.md`
 - `_data/`: optional per-machine symlink to an external Box, Drive, or data root; ignored by git
 - `_repos/`: tracked README plus ignored local symlinks to related repository clones when a project needs cross-repo context

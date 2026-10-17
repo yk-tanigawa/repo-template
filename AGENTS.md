@@ -110,5 +110,6 @@ When handing work back to the user:
 - Mention validation performed.
 - Name the evidence for each reported action, and report anything unconfirmed or skipped as such. See "Reporting What Was Done" in `docs/integrity.md`.
 - Mention any remaining placeholders, missing local configuration, or follow-up checks.
+- State whether you added an agent feedback note, following `agent-feedback/README.md`.
 
 Do not assume context outside the repository unless it is documented in `README.md`, this file, `docs/`, or the user explicitly provides it.
