@@ -31,6 +31,7 @@ When resuming work in this repository:
 
 - Use paths relative to the repository root in documentation, comments, and handoffs.
 - Do not include machine-local absolute paths in tracked files unless the user explicitly asks for a machine-specific note.
+- In a public repository, do not reference private repositories in files, commit messages, issues, pull requests, or review replies. See `docs/writing-guide.md`.
 - Treat tracked source files as the source of truth. Do not commit generated artifacts unless the project documents them as published assets.
 - Keep sensitive, large, received, raw, or machine-local files outside git. Use `_inbox/` only for short-lived intake, `_data/` only as an ignored local link to the documented external root, and `_repos/` only for ignored local links to related repository clones.
 - Keep machine-specific settings in `.env.local`, and keep `.env.local` untracked.
@@ -47,8 +48,9 @@ When resuming work in this repository:
 
 ## Docs Map
 
-- `docs/writing-guide.md`: general prose, structure, links, paths, placeholders, and documentation checks.
-- `docs/issue-comments.md`: issue bodies, progress comments, status words, and next-action ownership on issue trackers.
+- `docs/writing-guide.md`: general prose, structure, links, paths, references to private repositories, placeholders, and documentation checks.
+- `docs/issue-comments.md`: issue bodies, progress comments, status words, next-action ownership, and replies to review comments on issues and pull requests.
+- `docs/public-release.md`: checklist for making a private repository public by publishing a history-free snapshot.
 - `docs/integrity.md`: accurate claims and honest reports of work for every project, plus source hierarchy and citation checks for scientific or scholarly content.
 - `docs/testing-guide.md`: test-driven development principles, test scenarios, `make test`, and minimum build checks.
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.

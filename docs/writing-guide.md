@@ -91,6 +91,21 @@ Avoid machine-local absolute paths in tracked files. Put local roots in `.env.lo
 
 Use stable internal links when possible. If a link depends on a generated site URL, document where that URL is configured.
 
+## References to Private Repositories
+
+A public repository must not reference a private repository. This covers tracked files, commit messages, issue and pull request text, review replies, and code comments. Do not include:
+
+- URLs to the private repository, its issues, pull requests, commits, or files
+- cross-repository shorthand such as `owner/private-repo#123`
+- the private repository's name, or paths to files inside it
+- notes such as "adopted from" or "see the discussion in" that point to private work
+
+These links fail for public readers, and they reveal that the private work exists and what it is about. When a change is adapted from private work, restate the reusable content in this repository and describe the change on its own terms. Before pushing to a public repository, search the changed text and the commit message for private repository names and URLs.
+
+If you are unsure whether a repository is public, check before writing the reference, for example with `gh repo view <owner>/<repo> --json visibility`. A private repository may reference a public one freely.
+
+When a private repository is about to become public, follow `docs/public-release.md`.
+
 ## Personal Information
 
 Use data minimization when writing about people. Prefer role labels such as "the student", "the trainee", "the collaborator", or "the instructor" when the person's identity is not needed.
@@ -112,4 +127,5 @@ Before publishing documentation changes, check:
 - Commands match the `Makefile` or `docs/local-development.md`.
 - Placeholders are intentional.
 - The text does not assume private local paths or hidden context.
+- In a public repository, the text and commit message do not reference a private repository.
 - The relevant validation step has been run or the reason for skipping it is recorded.

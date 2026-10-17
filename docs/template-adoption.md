@@ -74,6 +74,7 @@ Start from the problem the example revealed, not from the example's exact implem
 Run a de-contamination pass before handing the template update back for review:
 
 - Search changed files for project names, people, institutions, acronyms, local paths, private root variables, event names, deadlines, and domain-specific nouns from the example project.
+- If the example project is private, remove every reference to it, including links, `owner/repo#N` shorthand, and "adopted from" notes, from the changed files, the commit message, and the pull request text. Follow `docs/writing-guide.md`.
 - Replace example-specific names with neutral placeholders or project-owned variable names.
 - Move procedural detail into `docs/`; keep `README.md`, `AGENTS.md`, and other top-level files as maps and entrypoints.
 - Remove concrete subfolder inventories, source categories, command names, and validation steps unless they are truly reusable across projects.

@@ -53,3 +53,5 @@ If the related repository is optional, document which workflows need it and let 
 Apply the same privacy and source-control rules to related repositories that you apply here. If a related repository contains private data, individual-level records, credentials, unpublished drafts, or restricted source material, do not summarize or copy that material into tracked files unless the project has an explicit documented reason and the human maintainer confirms it is appropriate.
 
 When cross-repo context affects a durable convention, document the convention in this repository. Use links or path references to identify the source material instead of duplicating content.
+
+If this repository is public and the related repository is private, do not link to or name the private repository in tracked files, commits, issues, or pull requests. Restate the convention here on its own terms instead. See `docs/writing-guide.md`.
