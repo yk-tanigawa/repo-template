@@ -14,10 +14,10 @@
 # A worktree or branch is deleted only when every commit on it is in origin/main,
 # as an ancestor or as the same change applied again (git cherry), so a branch
 # that was rebased before merging counts as merged. A squash merge does not: its
-# branch is listed as unmerged. Never touched: the base branch (main), the branch
-# checked out in the main checkout, branches with an open PR, worktrees with
-# uncommitted changes, and locked worktrees. Remote branches are only listed,
-# never deleted.
+# branch is listed as unmerged. Never touched: the base branch (main), the main
+# checkout and the checkout the script runs from, with their branches, branches
+# with an open PR, worktrees with uncommitted changes, and locked worktrees.
+# Remote branches are only listed, never deleted.
 #
 # Before --execute deletes anything, every branch name and tip SHA is written to
 # <git dir>/cleanup-backups/, so `git branch <name> <sha>` restores a branch.
@@ -78,9 +78,17 @@ cleanup() {
     fi
     echo
     echo "== Worktrees"
+    local main_wt=""
     flush_wt() {
         [ -n "$path" ] || return 0
-        if [ "$path" != "$top" ]; then
+        # git lists the main working tree first. Keep it and the checkout this
+        # runs from, with their branches, whichever worktree the script is run
+        # from.
+        [ -n "$main_wt" ] || main_wt="$path"
+        if [ "$path" = "$main_wt" ] || [ "$path" = "$top" ]; then
+            echo "  KEEP    $path  [${branch:-(detached)}] main checkout or the current one"
+            kept_wt_branches="$kept_wt_branches"$'\n'"$branch"
+        else
             local name="${branch:-(detached)}" dirty
             if [ ! -d "$path" ]; then
                 echo "  DELETE  $path  [$name] directory is missing"
@@ -262,6 +270,17 @@ self_test() {
     expect "merged remote branch is listed" 'git push origin --delete merged'
     expect "dry run says nothing changed" 'Dry run: nothing changed'
     expect_ref present merged
+
+    echo "dry run from a linked worktree:"
+    out="$(cd "$tmp/wt-clean" && bash "$script" --no-gh 2>&1)"
+    expect "main checkout is kept" "KEEP    .*/work  \[main\] main checkout"
+    expect "current worktree is kept" 'KEEP    .*/wt-clean  \[wt-merged\] main checkout or the current one'
+    expect "branch of the current worktree is kept" '^  KEEP    wt-merged  '
+    if printf '%s\n' "$out" | grep -qE 'DELETE  .*/work  '; then
+        echo "  FAIL  main checkout listed for DELETE"; fails=$((fails + 1))
+    else
+        echo "  ok    main checkout not listed for DELETE"
+    fi
 
     echo "--execute:"
     out="$(bash "$script" --no-gh "$tmp/work" --execute 2>&1)" || true

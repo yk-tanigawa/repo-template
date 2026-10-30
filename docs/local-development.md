@@ -145,7 +145,7 @@ Document the underlying commands here after adoption.
 | `make lint` | `[lint command]` | `[lint scope]` |
 | `make format` | `[format command]` | `[what it changes]` |
 | `make git-cleanup` | `scripts/git_cleanup.sh` | Dry run by default. `GIT_CLEANUP_ARGS=--execute` deletes the local worktrees and branches it marks DELETE. See [Git Housekeeping](#git-housekeeping) |
-| `make check-git-cleanup` | `scripts/git_cleanup.sh --self-test` | Fixture test on a throwaway repository. `make test` runs it |
+| `make check-git-cleanup` | `scripts/git_cleanup.sh --self-test` | Fixture test on a throwaway repository: merged, rebased and unmerged branches, a clean and a dirty worktree, a run from a linked worktree, and the `--execute` and `--include-unmerged` runs. `make test` runs it |
 | `make post-image-assets` | `scripts/post_image_assets.sh $(POST_IMAGE_ASSETS_ARGS) $(IMAGE_REF) $(IMAGES)` | Push images to `refs/assets/<IMAGE_REF>` and print Markdown for an issue or pull request comment. See "Images in Issues and Pull Requests" in `docs/issue-comments.md` |
 | `make check-post-image-assets` | `scripts/post_image_assets.sh --self-test` | Fixture test on a throwaway repository and image root. `make test` runs it |
 
@@ -164,7 +164,7 @@ make git-cleanup GIT_CLEANUP_ARGS=--execute         # delete what the dry run ma
 
 - **What counts as merged.** A branch or worktree is deleted only when every commit on it is in `origin/main`, either as an ancestor or as the same change applied again (`git cherry`). A branch rebased before merging therefore counts. A squash merge of several commits does not, because it makes one new commit out of many, so its branch shows as unmerged. Projects that squash-merge will see such branches listed as unmerged and should read the listed commits before deleting.
 - **Unmerged branches are shown, not deleted.** The dry run lists each commit that is not in `main`. Read them before adding `--include-unmerged`: a pull request can show as merged on GitHub when it was merged into another branch instead of `main`, as with stacked pull requests, and its commits are then not in `main`.
-- **Never touched:** `main`, the current branch, branches with an open pull request, and worktrees that are locked or have uncommitted changes.
+- **Never touched:** `main`, the main checkout and the worktree the script runs from (with the branches checked out in them), branches with an open pull request, and worktrees that are locked or have uncommitted changes. It can be run from the main checkout or from any linked worktree.
 - **Open pull requests** are looked up with the GitHub CLI (`gh`) on `PATH`. Without it, or when `gh auth status` fails, the script says that open pull requests were not checked and still deletes only branches whose commits are all in `origin/main`.
 - **Remote branches** already in `main` are listed with the command that deletes them, but the script does not run it: deleting a remote branch affects everyone.
 - **Backup.** Before `--execute` deletes anything, it writes every branch name and tip to `.git/cleanup-backups/`. `git branch <name> <sha>` restores one until git garbage-collects the commit.
