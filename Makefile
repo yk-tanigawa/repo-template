@@ -11,6 +11,7 @@ GIT_CLEANUP ?= scripts/git_cleanup.sh
 GIT_CLEANUP_ARGS ?=
 
 .PHONY: help setup setup-data setup-related-repos install dev build test lint format clean git-cleanup check-git-cleanup
+.PHONY: post-image-assets check-post-image-assets
 
 help:
 	@echo "Available commands:"
@@ -24,6 +25,9 @@ help:
 	@echo "  make clean    - Remove generated artifacts"
 	@echo "  make git-cleanup - Dry run: list local worktrees and branches already in origin/main"
 	@echo "                     (GIT_CLEANUP_ARGS=--execute deletes them)"
+	@echo "  make post-image-assets IMAGE_REF=<name> IMAGES='<files>'"
+	@echo "                 - Push images to refs/assets/<name> and print comment Markdown"
+	@echo "  make check-post-image-assets - Self-test scripts/post_image_assets.sh"
 
 setup: setup-data setup-related-repos
 	@echo "Add project-specific setup checks"
@@ -112,7 +116,7 @@ dev:
 build:
 	@echo "Replace with project-specific build or render command"
 
-test: check-git-cleanup
+test: check-git-cleanup check-post-image-assets
 	@echo "Replace with project-specific test command"
 
 lint:
@@ -129,3 +133,18 @@ git-cleanup:
 
 check-git-cleanup:
 	@bash "$(GIT_CLEANUP)" --self-test
+
+POST_IMAGE_ASSETS ?= scripts/post_image_assets.sh
+POST_IMAGE_ASSETS_ARGS ?=
+IMAGE_REF ?=
+IMAGES ?=
+
+post-image-assets:
+	@if [ -z "$(IMAGE_REF)" ] || [ -z "$(IMAGES)" ]; then \
+		echo "Usage: make post-image-assets IMAGE_REF=<name> IMAGES='<file> [<file> ...]' [POST_IMAGE_ASSETS_ARGS=--dry-run]"; \
+		exit 2; \
+	fi
+	@bash "$(POST_IMAGE_ASSETS)" $(POST_IMAGE_ASSETS_ARGS) "$(IMAGE_REF)" $(IMAGES)
+
+check-post-image-assets:
+	@bash "$(POST_IMAGE_ASSETS)" --self-test

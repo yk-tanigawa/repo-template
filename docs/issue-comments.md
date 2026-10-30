@@ -78,6 +78,23 @@ Keep the reply file outside tracked paths, or delete it after use.
 
 In a public repository, follow the cross-repository reference rule in `docs/writing-guide.md`. Do not cite issues, pull requests, commits, or files from a private repository in a reply, even when the work was motivated there.
 
+## Images in Issues and Pull Requests
+
+Screenshots, plots, and rendered pages often say more than a description. A person can drag an image into the comment box on GitHub, but GitHub's API cannot attach files to a comment, so an agent working from the command line cannot do that. Use `scripts/post_image_assets.sh` instead, through `make`:
+
+```bash
+make post-image-assets IMAGE_REF=pr-42/before-after IMAGES='$(PROJECT_EXTERNAL_DATA_ROOT)/screenshots/before.png $(PROJECT_EXTERNAL_DATA_ROOT)/screenshots/after.png'
+```
+
+`make` fills in `$(PROJECT_EXTERNAL_DATA_ROOT)` from `.env.local`. Keep the single quotes, so the shell passes it through unchanged.
+
+- **How it works.** The script commits the images on their own, in a commit with no parent, and pushes it to `refs/assets/<IMAGE_REF>`. A normal `git clone` fetches only branches and tags, so the images never enlarge clones or appear on any branch. The ref keeps the commit from being garbage collected, so the image links keep working.
+- **What it prints.** Markdown for the comment. Each image links to the commit, followed by its source path written as `$PROJECT_EXTERNAL_DATA_ROOT/<relative path>`. Paste it into the comment and keep the source lines: if the images ever stop showing, that path finds the file to regenerate or post again. Say next to the images how they were made, such as the command, the commit, or the run.
+- **Ref names.** Name the ref after the thread and the content, such as `pr-42/before-after` or `issue-17/coverage-plot`. The script refuses to overwrite an existing ref, so post a corrected image under a new name.
+- **What it accepts.** PNG, JPEG, and GIF files with distinct base names, from under the root named by `--root-var` (default `PROJECT_EXTERNAL_DATA_ROOT`; see `docs/external-data-layout.md`). Images inside the repository do not need this script: a tracked image can be linked by its path on a branch. Add `POST_IMAGE_ASSETS_ARGS=--dry-run` to print the Markdown without pushing.
+- **Who can see them.** The images are as visible as the repository. In a public repository anyone can open them, so check each image against `docs/privacy-guide.md` before posting: no individual-level data, personal information, or private paths. In a private repository, only people with access can see them.
+- **Removing them.** `git push origin --delete refs/assets/<IMAGE_REF>` removes the images and breaks every comment that shows them. Deleting the ref does not guarantee that copies are gone, so check images before posting rather than relying on deletion to withdraw one.
+
 ## Comments Written With an Agent
 
 When an agent posts a comment on a person's behalf, the comment starts with a line that says so, such as "Written with Claude Code". When the comment records that person's decisions, keep their decisions in a separate section from the agent's own notes.

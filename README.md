@@ -96,7 +96,7 @@ Update this list to match the project. Keep the top-level documentation stable a
 - `README.md`: project overview, workflow, and high-level layout
 - `Makefile`: stable command interface for humans and agents
 - `docs/`: maintainer notes and durable conventions
-- `scripts/`: helper scripts exposed through `Makefile` targets, such as `scripts/git_cleanup.sh` for `make git-cleanup`
+- `scripts/`: helper scripts exposed through `Makefile` targets, such as `scripts/git_cleanup.sh` for `make git-cleanup` and `scripts/post_image_assets.sh` for `make post-image-assets`
 - `.claude/skills/`: Claude Code skills that order the steps of a documented procedure; the rules stay in `docs/`
 - `agent-feedback/`: optional tracked notes from agents about repository friction, reviewed in batches; see `agent-feedback/README.md`
 - `_inbox/`: short-lived local intake area for unsorted files; contents are ignored except `_inbox/README.md`
