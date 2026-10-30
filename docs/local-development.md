@@ -146,6 +146,8 @@ Document the underlying commands here after adoption.
 | `make format` | `[format command]` | `[what it changes]` |
 | `make git-cleanup` | `scripts/git_cleanup.sh` | Dry run by default. `GIT_CLEANUP_ARGS=--execute` deletes the local worktrees and branches it marks DELETE. See [Git Housekeeping](#git-housekeeping) |
 | `make check-git-cleanup` | `scripts/git_cleanup.sh --self-test` | Fixture test on a throwaway repository. `make test` runs it |
+| `make post-image-assets` | `scripts/post_image_assets.sh $(POST_IMAGE_ASSETS_ARGS) $(IMAGE_REF) $(IMAGES)` | Push images to `refs/assets/<IMAGE_REF>` and print Markdown for an issue or pull request comment. See "Images in Issues and Pull Requests" in `docs/issue-comments.md` |
+| `make check-post-image-assets` | `scripts/post_image_assets.sh --self-test` | Fixture test on a throwaway repository and image root. `make test` runs it |
 
 If an agent discovers a command that should be reused, it should add or update a `Makefile` target rather than relying on a one-off shell command in future work.
 
