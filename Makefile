@@ -7,8 +7,10 @@ endif
 
 EXTERNAL_DATA_ROOT ?= $(PROJECT_EXTERNAL_DATA_ROOT)
 PROJECT_RELATED_REPOS ?=
+GIT_CLEANUP ?= scripts/git_cleanup.sh
+GIT_CLEANUP_ARGS ?=
 
-.PHONY: help setup setup-data setup-related-repos install dev build test lint format clean
+.PHONY: help setup setup-data setup-related-repos install dev build test lint format clean git-cleanup check-git-cleanup
 
 help:
 	@echo "Available commands:"
@@ -20,6 +22,8 @@ help:
 	@echo "  make lint     - Run lint checks"
 	@echo "  make format   - Apply formatting"
 	@echo "  make clean    - Remove generated artifacts"
+	@echo "  make git-cleanup - Dry run: list local worktrees and branches already in origin/main"
+	@echo "                     (GIT_CLEANUP_ARGS=--execute deletes them)"
 
 setup: setup-data setup-related-repos
 	@echo "Add project-specific setup checks"
@@ -108,7 +112,7 @@ dev:
 build:
 	@echo "Replace with project-specific build or render command"
 
-test:
+test: check-git-cleanup
 	@echo "Replace with project-specific test command"
 
 lint:
@@ -119,3 +123,9 @@ format:
 
 clean:
 	@echo "Replace with project-specific cleanup command"
+
+git-cleanup:
+	@bash "$(GIT_CLEANUP)" $(GIT_CLEANUP_ARGS)
+
+check-git-cleanup:
+	@bash "$(GIT_CLEANUP)" --self-test

@@ -7,6 +7,10 @@
 .env.local
 .claude/settings.local.json
 
+# Per-task git worktrees created by Claude Code. See "Git Housekeeping" in
+# docs/local-development.md.
+/.claude/worktrees/
+
 # Related repository symlinks. Keep only the tracked README.
 /_repos/*
 !/_repos/README.md

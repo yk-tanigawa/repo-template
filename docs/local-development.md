@@ -125,6 +125,7 @@ Recommended targets:
 | Run lint checks | `make lint` |
 | Apply formatting | `make format` |
 | Remove generated artifacts | `make clean` |
+| List merged local branches and worktrees | `make git-cleanup` |
 
 Delete targets that truly do not apply, or keep them as documented no-ops if a consistent interface is more useful for the project.
 
@@ -143,8 +144,34 @@ Document the underlying commands here after adoption.
 | `make test` | `[test command]` | `[test scope]` |
 | `make lint` | `[lint command]` | `[lint scope]` |
 | `make format` | `[format command]` | `[what it changes]` |
+| `make git-cleanup` | `scripts/git_cleanup.sh` | Dry run by default. `GIT_CLEANUP_ARGS=--execute` deletes the local worktrees and branches it marks DELETE. See [Git Housekeeping](#git-housekeeping) |
+| `make check-git-cleanup` | `scripts/git_cleanup.sh --self-test` | Fixture test on a throwaway repository. `make test` runs it |
 
 If an agent discovers a command that should be reused, it should add or update a `Makefile` target rather than relying on a one-off shell command in future work.
+
+## Git Housekeeping
+
+Agent tools such as Claude Code often work in a separate git worktree per task, a second checkout with its own branch (Claude Code puts these under `.claude/worktrees/`, which `.gitignore` excludes). The worktree and branch stay after the pull request merges, and they pile up quickly.
+
+`make git-cleanup` lists what can go and changes nothing:
+
+```bash
+make git-cleanup                                    # dry run
+make git-cleanup GIT_CLEANUP_ARGS=--execute         # delete what the dry run marked DELETE
+```
+
+- **What counts as merged.** A branch or worktree is deleted only when every commit on it is in `origin/main`, either as an ancestor or as the same change applied again (`git cherry`). A branch rebased before merging therefore counts. A squash merge of several commits does not, because it makes one new commit out of many, so its branch shows as unmerged. Projects that squash-merge will see such branches listed as unmerged and should read the listed commits before deleting.
+- **Unmerged branches are shown, not deleted.** The dry run lists each commit that is not in `main`. Read them before adding `--include-unmerged`: a pull request can show as merged on GitHub when it was merged into another branch instead of `main`, as with stacked pull requests, and its commits are then not in `main`.
+- **Never touched:** `main`, the current branch, branches with an open pull request, and worktrees that are locked or have uncommitted changes.
+- **Open pull requests** are looked up with the GitHub CLI (`gh`) on `PATH`. Without it, or when `gh auth status` fails, the script says that open pull requests were not checked and still deletes only branches whose commits are all in `origin/main`.
+- **Remote branches** already in `main` are listed with the command that deletes them, but the script does not run it: deleting a remote branch affects everyone.
+- **Backup.** Before `--execute` deletes anything, it writes every branch name and tip to `.git/cleanup-backups/`. `git branch <name> <sha>` restores one until git garbage-collects the commit.
+- **Base branch.** Set `GIT_CLEANUP_BASE` (for example `GIT_CLEANUP_BASE=upstream/trunk`) when the default branch is not `origin/main`.
+- **git version.** The script needs git 2.17 or newer, and stops if `git worktree list` fails.
+
+The script and its self-test run with the macOS system bash 3.2, so keep it free of bash 4 features such as `mapfile`.
+
+For agents, `.claude/skills/git-cleanup/SKILL.md` gives the order of steps and leaves every deletion to the person.
 
 ## Automation Workflow
 

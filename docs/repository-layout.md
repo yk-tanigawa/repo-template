@@ -8,6 +8,8 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `AGENTS.md`: agent-specific operating rules and handoff behavior.
 - `Makefile`: stable command interface for humans and agents.
 - `docs/`: maintainer notes for durable conventions.
+- `scripts/`: helper scripts exposed through `Makefile` targets, such as `scripts/git_cleanup.sh` for `make git-cleanup`.
+- `.claude/skills/`: Claude Code skills. A skill orders the steps of a procedure documented in `docs/` and holds no rules of its own.
 - `agent-feedback/`: optional tracked folder of unreviewed agent friction notes, reviewed by the maintainer in batches; see `agent-feedback/README.md`.
 - `_inbox/`: short-lived intake folder for unsorted files; contents are ignored except `_inbox/README.md`.
 - `_data/`: optional per-machine symlink to a Box, Drive, or external data root; ignored by git.
