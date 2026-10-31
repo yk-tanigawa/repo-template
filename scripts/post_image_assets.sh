@@ -116,7 +116,7 @@ $(printf '  %s\n' "${rels[@]}")"
 }
 
 self_test() {
-    local script tmp out sha rc fails=0
+    local script tmp out sha body rc fails=0
     script="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
     tmp="$(mktemp -d "${TMPDIR:-/tmp}/post_image_assets_test.XXXXXX")"
     trap 'rm -rf "$tmp"' RETURN
@@ -153,24 +153,24 @@ self_test() {
     check "exits 0" "$rc"
     sha="$(git -C "$tmp/work" ls-remote "$tmp/remote.git" refs/assets/pr-1/run1 | cut -f1)"
     if [ -n "$sha" ]; then ok "ref pushed"; else fail "ref pushed"; sha=missing; fi
-    [ "$(git -C "$tmp/work" rev-list --parents -n 1 "$sha" 2>/dev/null)" = "$sha" ]; check "commit has no parent" $?
-    [ "$(git -C "$tmp/work" ls-tree --name-only "$sha" 2>/dev/null | tr '\n' ' ')" = "fig1.png fig2.png shot.jpg " ]; check "tree holds the images by base name" $?
-    printf '%s\n' "$out" | grep -qF "![fig1](https://github.com/owner/repo/blob/$sha/fig1.png?raw=true)"; check "Markdown links the image by commit" $?
-    printf '%s\n' "$out" | grep -qF 'Source: `$TEST_IMAGE_ROOT/run1/figures/shot.jpg`'; check "Markdown names the source by variable" $?
-    printf '%s\n' "$out" | grep -qF "$tmp"; [ $? != 0 ]; check "no absolute path in the Markdown" $?
-    git -C "$tmp/work" log -1 --format=%B "$sha" 2>/dev/null | grep -qF run1/figures/fig2.png; check "commit message lists the sources" $?
+    if [ "$(git -C "$tmp/work" rev-list --parents -n 1 "$sha" 2>/dev/null)" = "$sha" ]; then ok "commit has no parent"; else fail "commit has no parent"; fi
+    if [ "$(git -C "$tmp/work" ls-tree --name-only "$sha" 2>/dev/null | tr '\n' ' ')" = "fig1.png fig2.png shot.jpg " ]; then ok "tree holds the images by base name"; else fail "tree holds the images by base name"; fi
+    grep -qF "![fig1](https://github.com/owner/repo/blob/$sha/fig1.png?raw=true)" <<<"$out"; check "Markdown links the image by commit" $?
+    grep -qF 'Source: `$TEST_IMAGE_ROOT/run1/figures/shot.jpg`' <<<"$out"; check "Markdown names the source by variable" $?
+    ! grep -qF "$tmp" <<<"$out"; check "no absolute path in the Markdown" $?
+    body="$(git -C "$tmp/work" log -1 --format=%B "$sha" 2>/dev/null)"; grep -qF run1/figures/fig2.png <<<"$body"; check "commit message lists the sources" $?
 
     git clone -q --no-local "$tmp/remote.git" "$tmp/clone" 2>/dev/null
-    git -C "$tmp/clone" cat-file -e "$sha" 2>/dev/null; [ $? != 0 ]; check "a plain clone does not fetch the images" $?
+    ! git -C "$tmp/clone" cat-file -e "$sha" 2>/dev/null; check "a plain clone does not fetch the images" $?
 
     out="$(run pr-1/run1 "$figs/fig1.png" 2>&1)"; rc=$?
-    [ "$rc" = 1 ] && printf '%s\n' "$out" | grep -q 'already exists'; check "an existing ref is not overwritten" $?
+    [ "$rc" = 1 ] && grep -q 'already exists' <<<"$out"; check "an existing ref is not overwritten" $?
 
     echo "dry run:"
     out="$(run --dry-run pr-2/run1 "$figs/fig1.png" 2>&1)"; rc=$?
     check "exits 0" "$rc"
-    [ -z "$(git -C "$tmp/work" ls-remote "$tmp/remote.git" refs/assets/pr-2/run1)" ]; check "nothing pushed" $?
-    printf '%s\n' "$out" | grep -qF '![fig1](https://github.com/owner/repo/blob/'; check "Markdown still printed" $?
+    if [ -z "$(git -C "$tmp/work" ls-remote "$tmp/remote.git" refs/assets/pr-2/run1)" ]; then ok "nothing pushed"; else fail "nothing pushed"; fi
+    grep -qF '![fig1](https://github.com/owner/repo/blob/' <<<"$out"; check "Markdown still printed" $?
 
     echo "refused input:"
     rm -rf "$tmp/remote.git/refs/assets"
@@ -179,7 +179,7 @@ self_test() {
         "r4 $figs/fig1.png $tmp/images/run1/sub/fig1.png" "r5/ $figs/fig1.png"; do
         # shellcheck disable=SC2086
         run $args >/dev/null 2>&1; rc=$?
-        [ "$rc" = 2 ]; check "refused: ${args//$tmp\//}" $?
+        if [ "$rc" = 2 ]; then ok "refused: ${args//$tmp\//}"; else fail "refused: ${args//$tmp\//}"; fi
     done
     (cd "$tmp/work" && env -u TEST_IMAGE_ROOT bash "$script" --repo owner/repo --root-var TEST_IMAGE_ROOT r6 "$figs/fig1.png" >/dev/null 2>&1); rc=$?
     [ "$rc" = 2 ]; check "refused: root variable unset" $?
