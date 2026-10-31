@@ -52,7 +52,7 @@ If the template is available in a local git clone, keep its path in `PROJECT_TEM
 ```bash
 git -C "$PROJECT_TEMPLATE_REPO" rev-parse HEAD
 git -C "$PROJECT_TEMPLATE_REPO" log --oneline [old-template-id]..[new-template-id]
-git -C "$PROJECT_TEMPLATE_REPO" diff [old-template-id]..[new-template-id] -- README.md AGENTS.md docs agent-feedback/README.md Makefile .env.local.example .gitignore TEMPLATE_SOURCE.md _repos/README.md
+git -C "$PROJECT_TEMPLATE_REPO" diff [old-template-id]..[new-template-id] -- README.md AGENTS.md docs agent-feedback/README.md Makefile scripts ruff.toml .env.local.example .gitignore TEMPLATE_SOURCE.md _repos/README.md
 ```
 
 Apply relevant changes to the downstream project with normal review.
@@ -92,6 +92,7 @@ Pay special attention to changes in:
 - `README.md`
 - `docs/`
 - `Makefile`
+- `scripts/` and `ruff.toml`
 - `.env.local.example`
 - `.gitignore`
 - `TEMPLATE_SOURCE.md`

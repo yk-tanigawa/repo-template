@@ -142,14 +142,32 @@ Document the underlying commands here after adoption.
 | `make dev` | `[dev command]` | `[preview URL or behavior]` |
 | `make build` | `[build command]` | `[output location]` |
 | `make test` | `[test command]` | `[test scope]` |
-| `make lint` | `[lint command]` | `[lint scope]` |
+| `make lint` | `scripts/lint.sh`: `shellcheck -x -S warning` on tracked shell scripts, and `ruff check` on tracked Python files with the rules pinned in `ruff.toml` | See [Lint](#lint). `make test` runs it |
 | `make format` | `[format command]` | `[what it changes]` |
 | `make git-cleanup` | `scripts/git_cleanup.sh` | Dry run by default. `GIT_CLEANUP_ARGS=--execute` deletes the local worktrees and branches it marks DELETE. See [Git Housekeeping](#git-housekeeping) |
 | `make check-git-cleanup` | `scripts/git_cleanup.sh --self-test` | Fixture test on a throwaway repository: merged, rebased and unmerged branches, a clean and a dirty worktree, a run from a linked worktree, and the `--execute` and `--include-unmerged` runs. `make test` runs it |
 | `make post-image-assets` | `scripts/post_image_assets.sh $(POST_IMAGE_ASSETS_ARGS) $(IMAGE_REF) $(IMAGES)` | Push images to `refs/assets/<IMAGE_REF>` and print Markdown for an issue or pull request comment. See "Images in Issues and Pull Requests" in `docs/issue-comments.md` |
 | `make check-post-image-assets` | `scripts/post_image_assets.sh --self-test` | Fixture test on a throwaway repository and image root. `make test` runs it |
+| `make check-lint` | `scripts/lint.sh --self-test` | Fixture test on a throwaway repository: which files are checked, a finding from each tool, and both ways of skipping. Checks that need a missing tool are not run, and the test says so. `make test` runs it |
 
 If an agent discovers a command that should be reused, it should add or update a `Makefile` target rather than relying on a one-off shell command in future work.
+
+## Lint
+
+`make lint` runs two static checkers on the tracked scripts:
+
+- **shellcheck** on shell scripts: files ending in `.sh`, `.bash`, `.qsub`, `.pbs`, or `.sbatch`, and other files whose first line is a `bash` or `sh` shebang. It fails on warning and error severity (`-S warning`); info and style findings are not reported.
+- **ruff** on `*.py` files, with the rule set pinned in `ruff.toml`: pyflakes (`F`) and the pycodestyle error groups `E4`, `E7`, and `E9`. Pinning keeps a new ruff release from changing what the check enforces. Widen or narrow the set there.
+
+Symlinks are skipped, so a file is checked once, through its target. `scripts/lint.sh --list` prints the files each tool would check.
+
+**Skipping.** A tool that is not installed is skipped with a `SKIP` line, and the target still passes, so `make lint` and `make test` work on any machine. A project that has a tool but does not want it sets `LINT_SKIP` in `.env.local` or on the command line, such as `make lint LINT_SKIP=ruff` or `LINT_SKIP="shellcheck ruff"`. When a tool is installed somewhere not on `PATH`, such as a conda environment or an environment module, set `LINT_SHELLCHECK` or `LINT_RUFF` to its path in `.env.local`.
+
+**Installing.** Both tools ship as single binaries: `brew install shellcheck ruff` on macOS, the distribution's `shellcheck` package or a release binary from GitHub (`koalaman/shellcheck`, `astral-sh/ruff`) on Linux, or `pip install ruff`. Tool versions are not pinned, so a newer shellcheck may report new warnings; `make lint` prints each tool's version.
+
+**Intended findings.** Mark a shellcheck finding that is intended with a directive and the reason on the line before it: `# shellcheck disable=SC2034  # read indirectly by name`. For ruff, use `# noqa: F401` with a comment saying why. Because shellcheck reads any comment line that starts with the word `shellcheck` as a directive, reword prose comments that would start that way.
+
+**What lint does not catch.** A clean lint is not proof that a script is correct. For example, shellcheck does not flag `printf '%s\n' "$out" | grep -q PATTERN` under `set -o pipefail`: when `grep -q` exits on the first match, `printf` can get SIGPIPE and the pipeline then fails as if nothing matched. Match against a here-string instead (`grep -q PATTERN <<<"$out"`), and cover behavior with tests.
 
 ## Git Housekeeping
 
