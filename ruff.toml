@@ -1,0 +1,10 @@
+# ruff settings for `make lint` (scripts/lint.sh). Pin the rule set so a new
+# ruff release cannot change what the lint gate checks: pyflakes (F) and the
+# pycodestyle error groups E4 (imports), E7 (statements) and E9 (syntax and
+# I/O errors). E741 (a variable named l, O or I) stays on.
+
+[lint]
+select = ["E4", "E7", "E9", "F"]
+# Style rules not enforced: E702 (several statements on one line with `;`) and
+# E731 (a lambda assigned to a name).
+ignore = ["E702", "E731"]

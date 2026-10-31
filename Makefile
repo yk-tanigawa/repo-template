@@ -9,9 +9,12 @@ EXTERNAL_DATA_ROOT ?= $(PROJECT_EXTERNAL_DATA_ROOT)
 PROJECT_RELATED_REPOS ?=
 GIT_CLEANUP ?= scripts/git_cleanup.sh
 GIT_CLEANUP_ARGS ?=
+LINT_SKIP ?=
+LINT_SHELLCHECK ?= shellcheck
+LINT_RUFF ?= ruff
 
 .PHONY: help setup setup-data setup-related-repos install dev build test lint format clean git-cleanup check-git-cleanup
-.PHONY: post-image-assets check-post-image-assets
+.PHONY: post-image-assets check-post-image-assets check-lint
 
 help:
 	@echo "Available commands:"
@@ -20,7 +23,8 @@ help:
 	@echo "  make dev      - Start local preview or development server"
 	@echo "  make build    - Build or render the project"
 	@echo "  make test     - Run tests"
-	@echo "  make lint     - Run lint checks"
+	@echo "  make lint     - Run shellcheck and ruff on tracked scripts (a missing tool is skipped;"
+	@echo "                 LINT_SKIP='shellcheck ruff' skips installed ones)"
 	@echo "  make format   - Apply formatting"
 	@echo "  make clean    - Remove generated artifacts"
 	@echo "  make git-cleanup - Dry run: list local worktrees and branches already in origin/main"
@@ -28,6 +32,7 @@ help:
 	@echo "  make post-image-assets IMAGE_REF=<name> IMAGES='<files>'"
 	@echo "                 - Push images to refs/assets/<name> and print comment Markdown"
 	@echo "  make check-post-image-assets - Self-test scripts/post_image_assets.sh"
+	@echo "  make check-lint - Self-test scripts/lint.sh"
 
 setup: setup-data setup-related-repos
 	@echo "Add project-specific setup checks"
@@ -116,11 +121,14 @@ dev:
 build:
 	@echo "Replace with project-specific build or render command"
 
-test: check-git-cleanup check-post-image-assets
+test: lint check-git-cleanup check-post-image-assets check-lint
 	@echo "Replace with project-specific test command"
 
 lint:
-	@echo "Replace with project-specific lint command"
+	@LINT_SKIP="$(LINT_SKIP)" LINT_SHELLCHECK="$(LINT_SHELLCHECK)" LINT_RUFF="$(LINT_RUFF)" bash scripts/lint.sh
+
+check-lint:
+	@LINT_SHELLCHECK="$(LINT_SHELLCHECK)" LINT_RUFF="$(LINT_RUFF)" bash scripts/lint.sh --self-test
 
 format:
 	@echo "Replace with project-specific format command"

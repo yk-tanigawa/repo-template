@@ -8,7 +8,7 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `AGENTS.md`: agent-specific operating rules and handoff behavior.
 - `Makefile`: stable command interface for humans and agents.
 - `docs/`: maintainer notes for durable conventions.
-- `scripts/`: helper scripts exposed through `Makefile` targets, such as `scripts/git_cleanup.sh` for `make git-cleanup` and `scripts/post_image_assets.sh` for `make post-image-assets`.
+- `scripts/`: helper scripts exposed through `Makefile` targets, such as `scripts/git_cleanup.sh` for `make git-cleanup` `scripts/post_image_assets.sh` for `make post-image-assets`, and `scripts/lint.sh` for `make lint`.
 - `.claude/skills/`: Claude Code skills. A skill orders the steps of a procedure documented in `docs/` and holds no rules of its own.
 - `agent-feedback/`: optional tracked folder of unreviewed agent friction notes, reviewed by the maintainer in batches; see `agent-feedback/README.md`.
 - `_inbox/`: short-lived intake folder for unsorted files; contents are ignored except `_inbox/README.md`.
@@ -17,6 +17,7 @@ This document describes top-level files, path conventions, generated artifacts, 
 - `LICENSE`: the project's own license. The template is published under MIT No Attribution, and an adopted project chooses its own terms.
 - `TEMPLATE_SOURCE.md`: template source identifier and update history.
 - `.env.local.example`: documented local configuration variables.
+- `ruff.toml`: the ruff rule set that `make lint` applies to Python files.
 - `.gitignore`: local config, dependency folders, and build artifacts.
 
 ## Project-Specific Layout

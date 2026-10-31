@@ -28,7 +28,7 @@ Expose testing through `make` whenever practical.
 Recommended targets:
 
 - `make test` for the primary automated test suite.
-- `make lint` for static checks.
+- `make lint` for static checks. The template's `make lint` runs shellcheck and ruff and skips a tool that is not installed; see "Lint" in `docs/local-development.md`.
 - `make build` for build, render, or packaging checks.
 - `make dev` for local preview when visual inspection is needed.
 
