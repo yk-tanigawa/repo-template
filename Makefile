@@ -138,6 +138,11 @@ clean:
 
 git-cleanup:
 	@bash "$(GIT_CLEANUP)" $(GIT_CLEANUP_ARGS)
+ifeq (,$(findstring --execute,$(GIT_CLEANUP_ARGS)))
+	@echo ""
+	@echo "To delete what is marked DELETE:  make git-cleanup GIT_CLEANUP_ARGS=--execute"
+	@echo "To also drop unmerged branches:   make git-cleanup GIT_CLEANUP_ARGS='--execute --include-unmerged'"
+endif
 
 check-git-cleanup:
 	@bash "$(GIT_CLEANUP)" --self-test
