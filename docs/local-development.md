@@ -144,7 +144,7 @@ Document the underlying commands here after adoption.
 | `make test` | `[test command]` | `[test scope]` |
 | `make lint` | `scripts/lint.sh`: `shellcheck -x -S warning` on tracked shell scripts, and `ruff check` on tracked Python files with the rules pinned in `ruff.toml` | See [Lint](#lint). `make test` runs it |
 | `make format` | `[format command]` | `[what it changes]` |
-| `make git-cleanup` | `scripts/git_cleanup.sh` | Dry run by default. `GIT_CLEANUP_ARGS=--execute` deletes the local worktrees and branches it marks DELETE. See [Git Housekeeping](#git-housekeeping) |
+| `make git-cleanup` | `scripts/git_cleanup.sh` | Dry run by default. `GIT_CLEANUP_ARGS=--execute` deletes the local worktrees and branches it marks DELETE, and the dry run ends by printing that command. See [Git Housekeeping](#git-housekeeping) |
 | `make check-git-cleanup` | `scripts/git_cleanup.sh --self-test` | Fixture test on a throwaway repository: merged, rebased and unmerged branches, a clean and a dirty worktree, a run from a linked worktree, and the `--execute` and `--include-unmerged` runs. `make test` runs it |
 | `make post-image-assets` | `scripts/post_image_assets.sh $(POST_IMAGE_ASSETS_ARGS) $(IMAGE_REF) $(IMAGES)` | Push images to `refs/assets/<IMAGE_REF>` and print Markdown for an issue or pull request comment. See "Images in Issues and Pull Requests" in `docs/issue-comments.md` |
 | `make check-post-image-assets` | `scripts/post_image_assets.sh --self-test` | Fixture test on a throwaway repository and image root. `make test` runs it |
