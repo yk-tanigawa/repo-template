@@ -9,16 +9,19 @@ EXTERNAL_DATA_ROOT ?= $(PROJECT_EXTERNAL_DATA_ROOT)
 PROJECT_RELATED_REPOS ?=
 GIT_CLEANUP ?= scripts/git_cleanup.sh
 GIT_CLEANUP_ARGS ?=
+WORKTREE_SETUP ?= scripts/worktree_setup.sh
 LINT_SKIP ?=
 LINT_SHELLCHECK ?= shellcheck
 LINT_RUFF ?= ruff
 
 .PHONY: help setup setup-data setup-related-repos install dev build test lint format clean git-cleanup check-git-cleanup
-.PHONY: post-image-assets check-post-image-assets check-lint
+.PHONY: post-image-assets check-post-image-assets check-lint worktree-setup check-worktree-setup
 
 help:
 	@echo "Available commands:"
 	@echo "  make setup    - Prepare local machine-specific configuration"
+	@echo "  make worktree-setup - In a new git worktree: copy .env.local from the main worktree"
+	@echo "                 (never overwrites), then run make setup"
 	@echo "  make install  - Install project dependencies"
 	@echo "  make dev      - Start local preview or development server"
 	@echo "  make build    - Build or render the project"
@@ -33,11 +36,24 @@ help:
 	@echo "                 - Push images to refs/assets/<name> and print comment Markdown"
 	@echo "  make check-post-image-assets - Self-test scripts/post_image_assets.sh"
 	@echo "  make check-lint - Self-test scripts/lint.sh"
+	@echo "  make check-worktree-setup - Self-test scripts/worktree_setup.sh"
 
 setup: setup-data setup-related-repos
 	@echo "Add project-specific setup checks"
 
+# Prepare a linked git worktree (such as a Claude Code worktree under
+# .claude/worktrees/): copy the ignored .env.local from the main worktree when
+# this one has none, then run setup in a fresh make so it reads the copied file.
+# See docs/local-development.md ("Working in a Git Worktree").
+worktree-setup:
+	@bash "$(WORKTREE_SETUP)"
+	@$(MAKE) --no-print-directory setup
+
+check-worktree-setup:
+	@bash "$(WORKTREE_SETUP)" --self-test
+
 setup-data:
+	@bash "$(WORKTREE_SETUP)" --hint
 	@if [ -n "$(EXTERNAL_DATA_ROOT)" ]; then \
 		if [ ! -d "$(EXTERNAL_DATA_ROOT)" ]; then \
 			echo "ERROR: external data root not found: $(EXTERNAL_DATA_ROOT)"; \
@@ -121,7 +137,7 @@ dev:
 build:
 	@echo "Replace with project-specific build or render command"
 
-test: lint check-git-cleanup check-post-image-assets check-lint
+test: lint check-git-cleanup check-post-image-assets check-lint check-worktree-setup
 	@echo "Replace with project-specific test command"
 
 lint:

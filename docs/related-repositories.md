@@ -28,7 +28,7 @@ For each related repository:
 1. Add a commented variable to `.env.local.example`.
 2. Add or update `PROJECT_RELATED_REPOS` in `.env.local.example`.
 3. Add the real clone path to `.env.local`.
-4. Run `make setup` to create or refresh the local symlink under `_repos/`.
+4. Run `make setup` to create or refresh the local symlink under `_repos/`. In a new git worktree, run `make worktree-setup` instead: it copies `.env.local` from the main worktree first (see "Working in a Git Worktree" in `docs/local-development.md`).
 5. Confirm `git status --short` does not show the local symlink.
 6. Document why the project needs the related repository and which files are source of truth.
 7. Update project-specific setup checks if the related repository is required for normal work.

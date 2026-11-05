@@ -19,13 +19,14 @@ When resuming work in this repository:
 4. Read `docs/local-development.md`.
 5. Inspect `Makefile` to learn the available targets and whether they depend on local configuration.
 6. Inspect `.env.local.example` for expected variables, and `.env.local` if it exists. Do not print secrets or copy private values into tracked files.
-7. If the task depends on local configuration and required values are unset, ask for missing machine-specific values before assuming paths, environment names, credentials, or data roots.
+7. In a new git worktree (such as `.claude/worktrees/<name>`), run `make worktree-setup` to copy `.env.local` from the main worktree and create the `_data/` and `_repos/` links. See "Working in a Git Worktree" in `docs/local-development.md`.
+8. If the task depends on local configuration and required values are unset, ask for missing machine-specific values before assuming paths, environment names, credentials, or data roots.
 
 **For the specific task:**
 
-8. Read the relevant documents in `docs/` (see Docs Map below).
-9. Inspect target source files before editing them.
-10. Run the appropriate `make` target when needed.
+9. Read the relevant documents in `docs/` (see Docs Map below).
+10. Inspect target source files before editing them.
+11. Run the appropriate `make` target when needed.
 
 ## Primary Rules
 
