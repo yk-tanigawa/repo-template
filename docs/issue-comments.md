@@ -46,6 +46,25 @@ in_review: waiting on @owner to approve the new build step.
 
 The issue body holds the current plan. When the plan changes, edit the body and add a comment that says what changed in it. Comments record progress and decisions over time.
 
+## When a Pull Request Merges
+
+After a pull request merges, update each issue it resolves or works toward, so the issue shows the outcome without anyone opening the pull request.
+
+1. **Check the issue's state first**, for example with `gh issue view <N> --json state`. A closing keyword such as `Closes #N` in the pull request description closes the issue when the pull request merges into the default branch, so the issue may already be closed.
+2. **Comment.** Post a short comment that names the merged pull request and what it did, with a status line as in "Comment Format". Use `done` only when the pull request fully resolves the issue.
+3. **Edit the body.** Where the issue body carries a status, checklist, or plan that the merge made out of date, edit it (see "Issue Body and Comments").
+4. **Close the issue** when the pull request fully resolves it and it is still open.
+
+When the pull request resolves only part of the issue, leave the issue open. The comment uses a status other than `done`, says what is left, and names who owns the next step.
+
+Do not close an issue the person asked to keep open. Ask before closing an issue that someone else filed in a repository that belongs to another person.
+
+Example:
+
+```markdown
+done: #14 merged and added the `make lint` target this issue asked for.
+```
+
 ## Replying to Review Comments
 
 When a reviewer comments on an issue or pull request and someone takes the work on, reply in two steps, so the reviewer can tell at a glance that the comment has been seen, and then what came of it.
