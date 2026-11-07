@@ -2,7 +2,7 @@
 
 Use this checklist when a private repository, or part of one, is about to become public. Making a repository public cannot be fully undone: once content is published, it may be cloned, forked, cached, or indexed.
 
-Agents must not create a public repository, change a repository's visibility, or push to a public remote without explicit approval from the human maintainer for that release.
+Agents must not create a public repository or change a repository's visibility without explicit approval from the human maintainer for that release. Pushing the snapshot is a post to a public repository, so the steps in "Before Posting or Pushing Text That Involves a Private Repository" in `docs/writing-guide.md` also apply.
 
 ## Publish a Snapshot Without History
 
@@ -23,7 +23,7 @@ Keep the private repository private. Decide with the maintainer where developmen
 
 ## 2. Remove References to Private Repositories
 
-Follow "References to Private Repositories" in `docs/writing-guide.md`. Search the tracked files for:
+Follow "References Involving a Private Repository" in `docs/writing-guide.md`. Search the tracked files for:
 
 - [ ] URLs to private repositories, their issues, pull requests, commits, or files
 - [ ] cross-repository shorthand such as `owner/private-repo#123`

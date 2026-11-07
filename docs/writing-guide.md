@@ -91,18 +91,52 @@ Avoid machine-local absolute paths in tracked files. Put local roots in `.env.lo
 
 Use stable internal links when possible. If a link depends on a generated site URL, document where that URL is configured.
 
-## References to Private Repositories
+## References Involving a Private Repository
 
-A public repository must not reference a private repository. This covers tracked files, commit messages, issue and pull request text, review replies, and code comments. Do not include:
+Any reference that involves at least one private repository needs care: a public repository mentioning a private one, a private repository mentioning another repository's issue, pull request, or commit, and one private repository mentioning another. This section is the canonical home for those rules and for the approval step before posting such text.
+
+### Why the Rule Exists
+
+**Private by default.** An agent cannot tell why a repository is private. Some private repositories will be published later, and others are meant to stay private for good. So, by default, share nothing about a private repository outside it, not even that it exists.
+
+**References create links.** GitHub turns a reference such as `owner/repo#123`, `owner/repo@<sha>`, or a URL to an issue, pull request, or commit into a link. By default, a reference also generates a backlink: the referenced issue or pull request records a cross-reference in its timeline, pointing to the text that mentioned it. See GitHub's "Autolinked references and URLs" documentation. GitHub's documentation does not say who can see that backlink when the mentioning text is in a private repository, so do not rely on it staying hidden. This matters in three cases:
+
+- **Public text that mentions a private repository.** The text shows the private repository's name to every public reader, even when the link does not open for them.
+- **Private text that mentions another repository's thread.** The mention adds a backlink to that thread's timeline, so the other repository's thread now records that the private work exists.
+- **One private repository mentioning another.** Either repository may become public later, and the link and its backlink would then expose the other. Until then, the two may have different audiences, and a reference can tell readers of one about work in the other.
+
+The default follows from these cases. From any private repository, name another repository's threads in plain words, such as "owner/repo issue 123", instead of linking them or writing `owner/repo#123`. Keep a private repository's name, existence, and threads out of every other repository, public or private, so a plain-words reference to another private repository is also left out.
+
+### What to Leave Out
+
+This covers tracked files, commit messages, issue and pull request text, review replies, and code comments. Do not include:
 
 - URLs to the private repository, its issues, pull requests, commits, or files
 - cross-repository shorthand such as `owner/private-repo#123`
 - the private repository's name, or paths to files inside it
 - notes such as "adopted from" or "see the discussion in" that point to private work
 
-These links fail for public readers, and they reveal that the private work exists and what it is about. When a change is adapted from private work, restate the reusable content in this repository and describe the change on its own terms. Before pushing to a public repository, search the changed text and the commit message for private repository names and URLs.
+When a change is adapted from private work, restate the reusable content in this repository and describe the change on its own terms.
 
-If you are unsure whether a repository is public, check before writing the reference, for example with `gh repo view <owner>/<repo> --json visibility`. A private repository may reference a public one freely.
+If you are unsure whether a repository is public, check before writing the reference, for example with `gh repo view <owner>/<repo> --json visibility`.
+
+### Exemptions
+
+The rules above are the default. Only the owner of the private repository being referenced can relax them, for a specific reference, by an explicit written exemption, because that repository's existence is what the reference discloses. When the referencing repository is a different private repository, its owner agrees too. An agent never grants or assumes an exemption.
+
+Record the exemption where the reference lives, in a tracked file of the referencing repository, such as a short "Exemptions" list in its docs. The record names the repositories, what is allowed (for example, naming the repository in plain words, or linking its threads), who granted it, and the date. A link to where it was granted is optional, and only if that link itself follows the rules in this section.
+
+An exemption covers only what it names. It does not extend to public repositories unless it says so, and the approval step below still applies to each post. This template gives the mechanism only and records no exemptions.
+
+### Before Posting or Pushing Text That Involves a Private Repository
+
+These steps apply to every post or push in a public repository: opening, commenting on, or editing an issue or pull request, and pushing commits. They also apply in a private repository to any text that refers to another private repository, because there is no guarantee that either will stay private. Follow them in order:
+
+1. **Clean the text.** Apply the list above: remove references, links, issue and pull request numbers, and paths from any private repository other than the one being posted to. Then search the changed text and the commit message for private repository names, owners, URLs, and `#[0-9]` references, and confirm that each remaining `#N` refers to the repository being posted to.
+2. **Get approval.** A person reads the cleaned text and approves it.
+3. **Post.** The person posts it, or approves the agent posting it.
+
+An agent does not post or push such text without that approval. When a permission check blocks an agent from posting or pushing, the agent hands the drafts and the exact commands to the person, who posts them. The agent does not look for another route around the block.
 
 When a private repository is about to become public, follow `docs/public-release.md`.
 
@@ -127,5 +161,5 @@ Before publishing documentation changes, check:
 - Commands match the `Makefile` or `docs/local-development.md`.
 - Placeholders are intentional.
 - The text does not assume private local paths or hidden context.
-- In a public repository, the text and commit message do not reference a private repository.
+- The text and commit message follow "References Involving a Private Repository".
 - The relevant validation step has been run or the reason for skipping it is recorded.

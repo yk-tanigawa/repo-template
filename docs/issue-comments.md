@@ -76,7 +76,7 @@ Keep the reply file outside tracked paths, or delete it after use.
 
 ### Public Repositories
 
-In a public repository, follow the cross-repository reference rule in `docs/writing-guide.md`. Do not cite issues, pull requests, commits, or files from a private repository in a reply, even when the work was motivated there.
+In a public repository, follow "References Involving a Private Repository" in `docs/writing-guide.md`. Do not cite issues, pull requests, commits, or files from a private repository in a reply, even when the work was motivated there.
 
 ## Images in Issues and Pull Requests
 
