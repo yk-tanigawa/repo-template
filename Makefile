@@ -31,7 +31,8 @@ help:
 	@echo "  make format   - Apply formatting"
 	@echo "  make clean    - Remove generated artifacts"
 	@echo "  make git-cleanup - Dry run: list local worktrees and branches already in origin/main"
-	@echo "                     (GIT_CLEANUP_ARGS=--execute deletes them)"
+	@echo "                     (GIT_CLEANUP_ARGS=--execute deletes them;"
+	@echo "                     GIT_CLEANUP_ARGS='--base origin/master' compares with another branch)"
 	@echo "  make post-image-assets IMAGE_REF=<name> IMAGES='<files>'"
 	@echo "                 - Push images to refs/assets/<name> and print comment Markdown"
 	@echo "  make check-post-image-assets - Self-test scripts/post_image_assets.sh"
@@ -156,8 +157,8 @@ git-cleanup:
 	@bash "$(GIT_CLEANUP)" $(GIT_CLEANUP_ARGS)
 ifeq (,$(findstring --execute,$(GIT_CLEANUP_ARGS)))
 	@echo ""
-	@echo "To delete what is marked DELETE:  make git-cleanup GIT_CLEANUP_ARGS=--execute"
-	@echo "To also drop unmerged branches:   make git-cleanup GIT_CLEANUP_ARGS='--execute --include-unmerged'"
+	@echo "To delete what is marked DELETE:  make git-cleanup GIT_CLEANUP_ARGS='$(strip $(GIT_CLEANUP_ARGS) --execute)'"
+	@echo "To also drop unmerged branches:   make git-cleanup GIT_CLEANUP_ARGS='$(strip $(GIT_CLEANUP_ARGS) --execute --include-unmerged)'"
 endif
 
 check-git-cleanup:
