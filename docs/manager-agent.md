@@ -48,7 +48,9 @@ Assume the subagent has not seen the conversation. The prompt states:
 
 A subagent stops before any action that others can see and the person has not approved, such as pushing a branch, opening or merging a pull request, filing an issue, posting a comment, or publishing a page. It leaves the work ready, for example as a local commit, and reports the action it would take next.
 
-A subagent takes such an action only when its prompt authorizes that specific action. Only the person's approval counts. The manager passes an approval along and does not grant one on its own.
+In a private repository, a subagent takes such an action only when its prompt authorizes that specific action. Only the person's approval counts. The manager passes an approval along and does not grant one on its own. For text that involves another private repository, the prompt's authorization counts only when a person has approved the cleaned text, following "Before Posting or Pushing Text That Involves a Private Repository" in `docs/writing-guide.md`.
+
+In a public repository, a subagent never posts, comments, edits an issue or pull request, or pushes, even when its prompt authorizes it. It returns drafts and a local commit, and the manager hands them to the person, following "References Involving a Private Repository" in `docs/writing-guide.md`.
 
 ### One Editor per File
 
