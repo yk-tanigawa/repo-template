@@ -57,7 +57,7 @@ When resuming work in this repository:
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.
 - `docs/automation-guide.md`: repeated work, scripts, `make` targets, pipelines, and consistency improvements.
 - `docs/agent-instructions.md`: maintaining clear, specific, non-conflicting `AGENTS.md`, `CLAUDE.md`, and nested instruction files.
-- `docs/agent-delegation.md`: handing substantial editing to background subagents, writing their prompts, outward-facing actions, and keeping agents off each other's files.
+- `docs/manager-agent.md`: the main agent as a manager of background subagents: delegating substantial editing, subagent prompts, outward-facing actions, and pausing and resuming with handoff files under `.claude/handoffs/`.
 - `docs/template-adoption.md`: recording the source template version and catching up with upstream template changes.
 - `docs/local-development.md`: `Makefile` targets, environment setup, preview commands, build commands, and validation checklist.
 - `docs/repository-layout.md`: top-level files, path conventions, generated artifacts, and how to document project-specific layout.
