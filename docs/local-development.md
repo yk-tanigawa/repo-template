@@ -34,6 +34,24 @@ List configured links in `PROJECT_RELATED_REPOS` as `link-name:ENV_VAR` entries,
 
 If the related repository is required for normal development, include it in `PROJECT_RELATED_REPOS` and let `make setup` verify the target. If it is optional, document the workflows that need it and avoid making unrelated targets fail when the clone is absent.
 
+## Working in a Git Worktree
+
+A git worktree is a second checkout of this repository with its own branch, such as the per-task worktrees Claude Code creates under `.claude/worktrees/`. A new worktree has the tracked files only: the ignored `.env.local` and the `_data/` and `_repos/` symlinks are missing, so targets that read `.env.local` variables fall back to their defaults and workflows that need external data or related clones cannot find them.
+
+Run this once in each new worktree, from its top level:
+
+```bash
+make worktree-setup
+```
+
+- It finds the main worktree (the first entry of `git worktree list --porcelain`) and copies its `.env.local` into the current worktree when the current worktree has none. An existing `.env.local` is never overwritten, and the file's contents are never printed.
+- It then runs `make setup` in a fresh `make`, so the copied variables create the `_data/` and `_repos/` symlinks.
+- In the main worktree it says there is nothing to copy and runs `make setup`.
+- When the main worktree has no `.env.local` either, it says so and `make setup` skips the links; set up the main worktree first (see "Environment Files" above).
+- The copy is a snapshot. After changing the main worktree's `.env.local`, delete the worktree's copy and run `make worktree-setup` again. Keep `.env.local` values as absolute paths so the copy works from any checkout.
+
+`make setup` prints a hint to run `make worktree-setup` when it runs in a linked worktree without `.env.local`. Agents working in a worktree run `make worktree-setup` before any target that needs local configuration. Projects that add a validation target depending on `.env.local`, such as `make check`, can print the same hint with `scripts/worktree_setup.sh --hint`.
+
 ## Claude Code Configuration
 
 The template ships `.claude/settings.json.example` as a starter for Claude Code's per-project configuration. The two most-used fields are `permissions.allow` (pre-approved Bash patterns) and `permissions.additionalDirectories` (paths outside the repository Claude Code may read). Mirror any external paths through `.env.local`.
@@ -118,6 +136,7 @@ Recommended targets:
 | --- | --- |
 | Show commands | `make help` |
 | Prepare local environment | `make setup` |
+| Prepare a new git worktree | `make worktree-setup` |
 | Install dependencies | `make install` |
 | Start local preview or development server | `make dev` |
 | Build or render the project | `make build` |
@@ -137,7 +156,8 @@ Document the underlying commands here after adoption.
 
 | Make target | Underlying command | Notes |
 | --- | --- | --- |
-| `make setup` | Create or refresh configured `_data/` and `_repos/` symlinks, then run project-specific setup checks | Add required local variables to `.env.local.example` before adoption |
+| `make setup` | Create or refresh configured `_data/` and `_repos/` symlinks, then run project-specific setup checks | Add required local variables to `.env.local.example` before adoption. In a linked worktree without `.env.local`, first prints a hint to run `make worktree-setup` (`scripts/worktree_setup.sh --hint`) |
+| `make worktree-setup` | `scripts/worktree_setup.sh`, then `make setup` | Copies `.env.local` from the main worktree only when the current worktree has none, without printing it. See [Working in a Git Worktree](#working-in-a-git-worktree) |
 | `make install` | `[install command]` | `[dependency notes]` |
 | `make dev` | `[dev command]` | `[preview URL or behavior]` |
 | `make build` | `[build command]` | `[output location]` |
@@ -149,6 +169,7 @@ Document the underlying commands here after adoption.
 | `make post-image-assets` | `scripts/post_image_assets.sh $(POST_IMAGE_ASSETS_ARGS) $(IMAGE_REF) $(IMAGES)` | Push images to `refs/assets/<IMAGE_REF>` and print Markdown for an issue or pull request comment. See "Images in Issues and Pull Requests" in `docs/issue-comments.md` |
 | `make check-post-image-assets` | `scripts/post_image_assets.sh --self-test` | Fixture test on a throwaway repository and image root. `make test` runs it |
 | `make check-lint` | `scripts/lint.sh --self-test` | Fixture test on a throwaway repository: which files are checked, a finding from each tool, and both ways of skipping. Checks that need a missing tool are not run, and the test says so. `make test` runs it |
+| `make check-worktree-setup` | `scripts/worktree_setup.sh --self-test` | Fixture test on a throwaway repository with two linked worktrees: the copy is made from a subdirectory and matches the main worktree's file, its contents are not printed, an existing `.env.local` is not overwritten, the main worktree has nothing to copy, a main worktree without `.env.local` is reported, and the `--hint` output. `make test` runs it |
 
 If an agent discovers a command that should be reused, it should add or update a `Makefile` target rather than relying on a one-off shell command in future work.
 
@@ -171,7 +192,7 @@ Symlinks are skipped, so a file is checked once, through its target. `scripts/li
 
 ## Git Housekeeping
 
-Agent tools such as Claude Code often work in a separate git worktree per task, a second checkout with its own branch (Claude Code puts these under `.claude/worktrees/`, which `.gitignore` excludes). The worktree and branch stay after the pull request merges, and they pile up quickly.
+Agent tools such as Claude Code often work in a separate git worktree per task, a second checkout with its own branch (Claude Code puts these under `.claude/worktrees/`, which `.gitignore` excludes). The worktree and branch stay after the pull request merges, and they pile up quickly. To prepare a new worktree, see [Working in a Git Worktree](#working-in-a-git-worktree).
 
 `make git-cleanup` lists what can go and changes nothing:
 
