@@ -11,6 +11,10 @@
 # docs/local-development.md.
 /.claude/worktrees/
 
+# Agent handoff files written when a session pauses. See "Pausing and Resuming"
+# in docs/manager-agent.md.
+/.claude/handoffs/
+
 # Related repository symlinks. Keep only the tracked README.
 /_repos/*
 !/_repos/README.md
