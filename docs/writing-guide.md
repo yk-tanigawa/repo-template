@@ -132,7 +132,7 @@ An exemption covers only what it names. It does not extend to public repositorie
 
 These steps apply to every post or push in a public repository: opening, commenting on, or editing an issue or pull request, and pushing commits. They also apply in a private repository to any text that refers to another private repository, because there is no guarantee that either will stay private. Follow them in order:
 
-1. **Clean the text.** Apply the list above: remove references, links, issue and pull request numbers, and paths from any private repository other than the one being posted to. Then search the changed text and the commit message for private repository names, owners, URLs, and `#[0-9]` references, and confirm that each remaining `#N` refers to the repository being posted to.
+1. **Clean the text.** Apply the list above: remove references, links, issue and pull request numbers, and paths from any private repository other than the one being posted to, except what a recorded exemption names (see "Exemptions"). Then search the changed text and the commit message for private repository names, owners, URLs, and `#[0-9]` references, and confirm that each remaining `#N` refers to the repository being posted to, and that every other remaining reference is covered by a recorded exemption.
 2. **Get approval.** A person reads the cleaned text and approves it.
 3. **Post.** The person posts it, or approves the agent posting it.
 
