@@ -49,7 +49,7 @@ When resuming work in this repository:
 
 ## Docs Map
 
-- `docs/writing-guide.md`: general prose, structure, links, paths, references to private repositories, placeholders, and documentation checks.
+- `docs/writing-guide.md`: general prose, structure, links, paths, references involving a private repository, placeholders, and documentation checks.
 - `docs/issue-comments.md`: issue bodies, progress comments, status words, next-action ownership, updating the issue when its pull request merges, replies to review comments, and posting images on issues and pull requests.
 - `docs/public-release.md`: checklist for making a private repository public by publishing a history-free snapshot.
 - `docs/integrity.md`: accurate claims and honest reports of work for every project, plus source hierarchy and citation checks for scientific or scholarly content.

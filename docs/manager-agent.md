@@ -63,6 +63,8 @@ The check is cheap and mechanical. Examples:
 - Every file that a command handed to the person reads exists.
 - The narrowest relevant `make` target passes.
 
+When a task writes several output files, the prompt asks the subagent to write the large files first and the small ones, such as a summary or report, last. A task cut short then leaves the small files missing, which a presence check sees at once. In the opposite order, complete small files sit next to a truncated large file, and the task looks finished. The check still tests the large file itself, because a write can come up short without an error.
+
 A good check fails before the work and passes after it. A check that already passes cannot tell finished work from work never started.
 
 The check does not prove that the work is correct. It catches a task that did not finish, or one that finished something else. The manager still reviews the work against the relevant docs for judgment.
