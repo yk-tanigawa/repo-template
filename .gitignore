@@ -11,6 +11,10 @@
 # docs/local-development.md.
 /.claude/worktrees/
 
+# Agent tasks files and handoff files. See "Pausing and Resuming"
+# in docs/manager-agent.md.
+/.claude/handoffs/
+
 # Related repository symlinks. Keep only the tracked README.
 /_repos/*
 !/_repos/README.md
