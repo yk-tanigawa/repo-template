@@ -27,9 +27,9 @@ Keep with the manager: quick lookups, reading a file to answer a question, a one
 
 1. Do the quick lookups needed to scope the work.
 2. Ask the person the decisions the work depends on before starting it, so the subagent does not have to guess them.
-3. Write a self-contained prompt, as described below.
-4. Start the subagent in the background and tell the person what it is doing.
-5. When the subagent reports, check its evidence and its work against the relevant docs, then relay the result: what changed, the validation run, and what is left for the person to decide.
+3. Write a self-contained prompt, as described below, with each task's deliverables and check.
+4. Save the tasks file (see "The Tasks File"), then start the subagent in the background and tell the person what it is doing.
+5. When the subagent reports or goes quiet, run the task's check and review the work, as described in "Declare Deliverables and Checks". Then relay the result: what changed, the validation run, and what is left for the person to decide.
 
 ### Writing the Prompt
 
@@ -38,11 +38,44 @@ Assume the subagent has not seen the conversation. The prompt states:
 - **Goal:** the outcome wanted and why.
 - **Decisions:** what the person has already decided, quoted when the wording matters.
 - **Docs:** `AGENTS.md` and the docs that apply to the task, named by path. Point to them; do not restate their rules.
-- **Files:** which files to read and change, and where to work, such as a branch or worktree.
+- **Files:** which files to read and change, and where to work: a branch, a worktree, or a scratch directory.
+- **Deliverables and check:** what the task must produce and how the manager will check it (see "Declare Deliverables and Checks").
 - **What not to touch:** other clones or worktrees, files another agent is editing, and shared state.
 - **Validation:** the `make` targets to run.
 - **Outward actions:** the actions it may take that others can see, if any (see below).
 - **Report:** files changed, commits, validation results, decisions for the person, and anything skipped or unconfirmed, following "Reporting What Was Done" in `docs/integrity.md`.
+
+### Declare Deliverables and Checks
+
+A subagent can stop at any time without warning, for example when its process is killed or a usage limit hits. It may never write a final report or a handoff. So the manager accepts a subagent's work only when its deliverables pass a check. The report tells the manager where to look, and the check decides.
+
+This works like an array job on a cluster. Each unit is judged by its output files, with a small, cheap check per unit, because a job that wrote a short file can still exit 0. The work moves in three steps: the subagent writes, the manager audits with the check, and only checked work is pushed or posted.
+
+Before the subagent starts, the manager writes down each task's deliverables and a check for them. Both go in the prompt. Both also go in the tasks file (see "The Tasks File"), saved to disk before any work starts, so the record survives if the subagent or the manager's own session is killed.
+
+The manager designs the check. The subagent confirms or amends it before editing, and the manager records any amendment in the tasks file.
+
+The check is cheap and mechanical. Examples:
+
+- The branch exists and has a commit that touches the named files.
+- A named heading or sentence is present in a named file.
+- The draft files exist and contain no placeholder.
+- Every file that a command handed to the person reads exists.
+- The narrowest relevant `make` target passes.
+
+A good check fails before the work and passes after it. A check that already passes cannot tell finished work from work never started.
+
+The check does not prove that the work is correct. It catches a task that did not finish, or one that finished something else. The manager still reviews the work against the relevant docs for judgment.
+
+The subagent works where a kill cannot damage the main checkout: on its own branch, in a git worktree, or in a scratch directory. It commits in small steps. A kill then leaves recoverable state, and never a half-applied edit in the main checkout.
+
+One check serves three uses:
+
+1. **Accepting a result.** The manager runs the check when the subagent reports. It also runs the check when a subagent goes quiet, instead of waiting for it indefinitely.
+2. **Resuming.** The check sorts each task into accepted, partial, or redo (see "Resuming").
+3. **Before publishing.** The manager runs the check again just before any push or post, because the state may have changed since the task was accepted.
+
+Accept only what passes, and mark the task accepted in the tasks file. When a task's check does not pass, mark it failed-check, and relay the subagent's report as unconfirmed, following "Reporting What Was Done" in `docs/integrity.md`.
 
 ### Outward-Facing Actions
 
@@ -62,11 +95,11 @@ To change a running subagent's task, send it a message when the tool supports th
 
 ## Pausing and Resuming
 
-A session can end partway through a task, for example when a usage limit is close. When the person asks to pause, the manager and its subagents write handoff files, and a later session resumes from them.
+A session or a subagent can end without warning, for example when its process is killed or a usage limit hits. Nobody gets the chance to write a status note first. This is why the tasks file and the checks come first: they are written before the work starts, and a later session resumes by running the checks against the current state. Handoff files are an optional extra, written when a pause is possible, for judgment calls and next steps that a check cannot show.
 
-### Where Handoffs Live
+### Where Tasks Files and Handoffs Live
 
-Handoff files go in `.claude/handoffs/` at the top level of the main checkout. Git ignores this directory (see `.gitignore`), because handoffs are working notes that may name local paths and decisions the person has not made yet.
+Tasks files and handoff files go in `.claude/handoffs/` at the top level of the main checkout. Git ignores this directory (see `.gitignore`), because these files are working notes that may name local paths and decisions the person has not made yet.
 
 An agent working in a linked git worktree, such as `.claude/worktrees/<name>`, still writes to the main checkout's directory. The worktree may be deleted before the work resumes, and the next session usually starts in the main checkout. The main checkout is the first entry of `git worktree list --porcelain`:
 
@@ -80,6 +113,19 @@ mkdir -p "$main/.claude/handoffs"
 Name the manager's handoff `YYYY-MM-DD-HHMMSSZ-<session>.md`, with the time in UTC so names sort in order across machines and time zones. `date -u +%Y-%m-%d-%H%M%SZ` prints the time part. `<session>` is a short name for the task, such as `lint-target`.
 
 A subagent's handoff uses the same session name followed by its agent name: `YYYY-MM-DD-HHMMSSZ-<session>-<agent>.md`. The manager gives the session name in the pause instruction.
+
+Name the tasks file `YYYY-MM-DD-HHMMSSZ-<session>-tasks.md`, with the time it was first written. It is a separate file from the handoffs, and a session has one tasks file.
+
+### The Tasks File
+
+The manager writes the tasks file when it delegates, before any subagent starts work, and updates it as each task is accepted or fails its check. It lists each task with these fields:
+
+- **Task:** what the task is.
+- **Subagent:** the agent name that runs it.
+- **Deliverables:** what the task must produce (see "Declare Deliverables and Checks").
+- **Check:** the commands or observations that show the deliverables are there.
+- **Where:** the branch, the worktree path, or the scratch path, relative to the main checkout where possible.
+- **Status:** `pending`, `accepted`, `failed-check`, or `redo`.
 
 ### What a Handoff Contains
 
@@ -95,21 +141,27 @@ Claims in a handoff follow "Reporting What Was Done" in `docs/integrity.md`.
 
 ### Pausing
 
-When the person asks to pause:
+When a pause is possible, for example when the person asks for one or a usage limit is close:
 
 1. The manager sends a pause instruction to every running subagent, with the session name and the handoff directory.
 2. Each subagent stops at a safe point. No edit is left half applied, and its work is either committed on its branch or left as a clean diff that its handoff describes. It does not push or post in the middle of a step. It writes its handoff and reports the file name.
-3. The manager waits for each subagent's report. A subagent that does not answer is listed in the manager's handoff with its state marked unknown, to check on resume.
-4. The manager writes its own handoff, tells the person the file name, and stops.
+3. The manager runs each task's check and updates the tasks file. A subagent that does not answer is judged by its check alone.
+4. The manager writes its own handoff, tells the person the file names, and stops.
 
 ### Resuming
 
-1. List `.claude/handoffs/` in the main checkout. Read the newest handoff for the session and every subagent handoff it lists.
-2. Check each claim against the current state before acting: `git status`, `git worktree list`, the branches and their latest commits, and the state of each named pull request and issue (`gh pr view`, `gh issue view`). The person or another session may have changed things since the pause. When the state disagrees with the handoff, trust the state and tell the person.
-3. Ask the person the open decisions that are still open, then continue from the next step, delegating again as above.
+Resuming does not depend on handoffs. It starts from the tasks file and the current state.
+
+1. List `.claude/handoffs/` in the main checkout. Read the newest tasks file for the session, and any handoffs for it.
+2. Run each task's check against the current state, and sort the tasks:
+   - **Accepted:** the check passes. Review the work, then mark it `accepted`.
+   - **Partial:** the check fails, but some deliverables or commits exist. Mark it `failed-check` and inspect it before choosing to finish it or redo it.
+   - **Redo:** nothing usable exists. Mark it `redo` and delegate it again.
+3. Check the rest of the state before acting: `git status`, `git worktree list`, the branches and their latest commits, and the state of each named pull request and issue (`gh pr view`, `gh issue view`). The person or another session may have changed things since the work stopped. When the state disagrees with the tasks file or a handoff, trust the state and tell the person.
+4. Ask the person the open decisions that are still open, then continue, delegating again as above.
 
 ### Resolved Handoffs
 
-When the work a handoff describes is finished and its results are recorded where they belong, such as in commits, pull requests, and issue comments, delete the handoff. Delete the subagent handoffs it lists at the same time. The directory then holds only pending work, so a resuming agent can read everything in it.
+When the work a handoff describes is finished and its results are recorded where they belong, such as in commits, pull requests, and issue comments, delete the handoff. Delete the subagent handoffs it lists at the same time. Delete the session's tasks file when every task in it is accepted and recorded, or the person has dropped it. The directory then holds only pending work, so a resuming agent can read everything in it.
 
-Handoffs are untracked, so a deleted handoff cannot be recovered. Check that nothing in it is still pending before deleting it.
+These files are untracked, so a deleted file cannot be recovered. Check that nothing in it is still pending before deleting it.
