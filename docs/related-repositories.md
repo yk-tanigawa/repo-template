@@ -54,4 +54,4 @@ Apply the same privacy and source-control rules to related repositories that you
 
 When cross-repo context affects a durable convention, document the convention in this repository. Use links or path references to identify the source material instead of duplicating content.
 
-If this repository is public and the related repository is private, do not link to or name the private repository in tracked files, commits, issues, or pull requests. Restate the convention here on its own terms instead. See "References Involving a Private Repository" in `docs/writing-guide.md`.
+When a related repository is private, follow "References Involving a Private Repository" in `docs/writing-guide.md`, whatever this repository's visibility. Restate a convention you take from it here on its own terms, instead of pointing to it.

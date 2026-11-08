@@ -29,9 +29,9 @@ Example:
 ```markdown
 in_review: waiting on @owner to approve the new build step.
 
-- Done: added a `make lint` target and documented it in `docs/local-development.md` (#14).
+- Done: added a `make lint` target and documented it in `docs/local-development.md` (#123).
 - Remaining: run the lint target in CI after approval.
-- Next: @owner reviews #14.
+- Next: @owner reviews #123.
 ```
 
 ## Content Rules
@@ -62,7 +62,7 @@ Do not close an issue the person asked to keep open. Ask before closing an issue
 Example:
 
 ```markdown
-done: #14 merged and added the `make lint` target this issue asked for.
+done: #123 merged and added the `make lint` target this issue asked for.
 ```
 
 ## Replying to Review Comments
