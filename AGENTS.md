@@ -32,7 +32,7 @@ When resuming work in this repository:
 
 - Use paths relative to the repository root in documentation, comments, and handoffs.
 - Do not include machine-local absolute paths in tracked files unless the user explicitly asks for a machine-specific note.
-- In a public repository, do not reference private repositories in files, commit messages, issues, pull requests, or review replies. See `docs/writing-guide.md`.
+- Do not reference a private repository from any other repository, and from a private repository name other repositories' threads in plain words instead of linking them. Before posting or pushing in a public repository, or posting text in a private repository that refers to another private repository, get a person's approval of the cleaned text. See "References Involving a Private Repository" in `docs/writing-guide.md`.
 - Treat tracked source files as the source of truth. Do not commit generated artifacts unless the project documents them as published assets.
 - Keep sensitive, large, received, raw, or machine-local files outside git. Use `_inbox/` only for short-lived intake, `_data/` only as an ignored local link to the documented external root, and `_repos/` only for ignored local links to related repository clones.
 - Keep machine-specific settings in `.env.local`, and keep `.env.local` untracked.
