@@ -238,7 +238,23 @@ cleanup() {
     if [ "${#wt_delete[@]}" -gt 0 ]; then
         for p in "${wt_delete[@]}"; do
             if [ ! -d "$p" ]; then continue; fi
-            if git worktree remove "$p"; then echo "removed worktree $p"; else failed=1; fi
+            # Clear Python bytecode caches first. They are ignored files, which
+            # git worktree remove deletes too, but a removal has been seen to
+            # stop with "Directory not empty" after git had already dropped the
+            # worktree, leaving only tracked files and __pycache__ behind.
+            # Clearing them first leaves git less to delete.
+            if [ -n "$(find "$p" -type d -name __pycache__ -prune -print -quit 2>/dev/null)" ]; then
+                find "$p" -type d -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
+                echo "cleared __pycache__ in $p"
+            fi
+            if git worktree remove "$p"; then
+                echo "removed worktree $p"
+            else
+                failed=1
+                if [ -d "$p" ] && ! git worktree list --porcelain | grep -qxF "worktree $p"; then
+                    echo "  git unregistered $p but left files in it; check what is left, then rm -rf it" >&2
+                fi
+            fi
         done
     fi
     git worktree prune
@@ -306,6 +322,9 @@ self_test() {
         git worktree add -q ../wt-clean wt-merged
         git worktree add -q ../wt-dirty wt-dirty
         echo edit >> ../wt-dirty/a.txt
+        # An ignored bytecode cache in a worktree that will be removed.
+        echo '__pycache__/' >> .git/info/exclude
+        mkdir -p ../wt-clean/sub/__pycache__ && echo x > ../wt-clean/sub/__pycache__/m.cpython-39.pyc
     ) || { echo "FAIL: could not build the fixture"; return 1; }
 
     echo "dry run:"
@@ -336,6 +355,7 @@ self_test() {
     echo "--execute:"
     out="$(bash "$script" --no-gh "$tmp/work" --execute 2>&1)" || true
     expect "backup written" 'Branch tips saved to .*/cleanup-backups/branches\.'
+    expect "__pycache__ cleared before removing a worktree" '^cleared __pycache__ in .*/wt-clean$'
     expect_ref absent merged
     expect_ref absent rebased
     expect_ref absent wt-merged
