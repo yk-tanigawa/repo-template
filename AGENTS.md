@@ -14,6 +14,10 @@ When resuming work in this repository:
 2. Read this file.
 3. Read `TEMPLATE_SOURCE.md` if it exists, especially before changing shared setup or instruction files.
 
+**Before delegating work to subagents:**
+
+- Read `docs/manager-agent.md`. Staff each task by the capabilities it needs ("Staffing: Match the Agent to the Task"), not with the most capable model by default, and review each deliverable in proportion to the risk ("Review in Proportion to the Risk"). Record the staffing choice and its reason in the tasks file.
+
 **Before running project commands or environment-dependent work:**
 
 4. Read `docs/local-development.md`.
