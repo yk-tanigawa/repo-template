@@ -23,19 +23,52 @@ Delegate when a request needs substantial file editing, such as:
 
 Keep with the manager: quick lookups, reading a file to answer a question, a one-line edit the person is watching, and every decision that belongs to the person.
 
+### Staffing: Match the Agent to the Task
+
+Choosing who does a task is part of the manager's job, as it is for a manager who staffs a team. Before delegating, the manager decides what capabilities the task needs and picks the agent to match.
+
+Agent tools may offer several models or agent types: more capable ones that are slower and cost more, faster ones that are less capable, locally hosted ones, and specialized ones. What is available changes over time and differs between tools and accounts. Check what the current tool offers instead of assuming. Describe the choice by capability, such as "the most capable available model", "a faster, less capable model", or "a locally hosted model", rather than by product name.
+
+Weigh these factors:
+
+- **Judgment.** Ambiguous goals, design choices, writing that others will read and rely on, and subtle correctness need more capability. Well-specified transformations, searches, inventories, and applying an agreed change in many places need less.
+- **Context.** How much the agent must hold at once, such as many files, a long document, or the interactions among several parts.
+- **Cost of a mistake.** How much harm an error does, and how easily it is detected. An error that a test catches at once costs less than one that reads plausibly and goes unnoticed.
+- **Tools and access.** Whether the task needs particular tools or access, such as local-only data, network access, or a specific runtime.
+- **Cost, speed, and capacity.** Price, time to finish, usage or rate limits, and queue time.
+- **Where the material may go.** Privacy or confidentiality may require a locally hosted model, or forbid sending the material to a hosted one. Follow `docs/privacy-guide.md`.
+
+A rough guide:
+
+| Task | Suitable tier |
+| --- | --- |
+| Architecture, cross-cutting design, or prose that others will rely on | The most capable available model |
+| Debugging a failure whose cause is unknown | The most capable available model |
+| Well-specified edits, renames, or format conversions | A faster tier |
+| Searches, inventories, and mechanical verification against a stated rule | A faster tier |
+| Work on material that must not leave the machine | A locally hosted model, or the person, if no local model is good enough |
+
+Split a mixed task. When a task has a judgment part and a mechanical part, a more capable agent decides and writes the specification, such as the list of changes and the rule behind them, and a faster agent applies it and reports. This also keeps scarce capacity for the work that needs it.
+
+Do not staff everything with the most capable model. Over-staffing costs money, time, and capacity, and can stall all the work when a usage limit hits. Under-staffing costs quality, which the manager then pays for in review and rework.
+
+When the person names a model, tier, or effort level for a task, follow it over the manager's own judgment. If the choice seems to put the work at risk, say so, and still follow it unless the person changes it.
+
 ### What the Manager Does
 
 1. Do the quick lookups needed to scope the work.
 2. Ask the person the decisions the work depends on before starting it, so the subagent does not have to guess them.
-3. Write a self-contained prompt, as described below, with each task's deliverables and check.
-4. Save the tasks file (see "The Tasks File"), then start the subagent in the background and tell the person what it is doing.
-5. When the subagent reports or goes quiet, run the task's check and review the work, as described in "Declare Deliverables and Checks". Then relay the result: what changed, the validation run, and what is left for the person to decide.
+3. Staff each task, as described in "Staffing: Match the Agent to the Task".
+4. Write a self-contained prompt, as described below, with each task's deliverables and check.
+5. Save the tasks file (see "The Tasks File"), then start the subagent in the background and tell the person what it is doing.
+6. When the subagent reports or goes quiet, run the task's check and review the work, as described in "Declare Deliverables and Checks" and "Review in Proportion to the Risk". Then relay the result: what changed, the validation run, and what is left for the person to decide.
 
 ### Writing the Prompt
 
 Assume the subagent has not seen the conversation. The prompt states:
 
 - **Goal:** the outcome wanted and why.
+- **Staffing:** the model or tier chosen and, in one phrase, why, set through the tool's options for starting the agent where it has them. A subagent that finds the task needs more judgment than the prompt expected stops and reports, instead of guessing.
 - **Decisions:** what the person has already decided, quoted when the wording matters.
 - **Docs:** `AGENTS.md` and the docs that apply to the task, named by path. Point to them; do not restate their rules.
 - **Files:** which files to read and change, and where to work: a branch, a worktree, or a scratch directory.
@@ -78,6 +111,20 @@ One check serves three uses:
 3. **Before publishing.** The manager runs the check again just before any push or post, because the state may have changed since the task was accepted.
 
 Accept only what passes, and mark the task accepted in the tasks file. When a task's check does not pass, mark it failed-check, and relay the subagent's report as unconfirmed, following "Reporting What Was Done" in `docs/integrity.md`.
+
+### Review in Proportion to the Risk
+
+The manager is accountable for every deliverable meeting the repository's standard, whoever produced it. Delegating to a faster, less capable agent can lower quality, and the manager's review is what keeps that from reaching the person.
+
+The check catches unfinished work; review catches wrong work. Scale the review to the staffing risk: the weaker the agent is relative to the task, or the costlier an undetected error, the stronger the review. Design it before the work starts, and write it into the prompt and the tasks file. From lighter to stronger:
+
+- more specific deliverables, such as the named files and the exact change in each
+- mechanical checks that fail before the work and pass after it, such as a search that must return nothing
+- review of a sample of the output against the relevant docs, or of all of it
+- spot checks of claimed facts, quotes, and citations against their sources
+- an independent second review by a different agent, given the work and the docs but not the author's conclusions
+
+When a deliverable fails review, re-delegate it with a sharper prompt or escalate it to a more capable agent, and record which in the tasks file. Do not relay unverified work as done. Report it as unconfirmed, following "Reporting What Was Done" in `docs/integrity.md`.
 
 ### Outward-Facing Actions
 
@@ -124,6 +171,7 @@ The manager writes the tasks file when it delegates, before any subagent starts 
 
 - **Task:** what the task is.
 - **Subagent:** the agent name that runs it.
+- **Staffing:** the model or tier that runs it and, in one phrase, why, such as "faster tier: mechanical rename from a fixed list". A resumed session then staffs a redo the same way, or changes it on purpose.
 - **Deliverables:** what the task must produce (see "Declare Deliverables and Checks").
 - **Check:** the commands or observations that show the deliverables are there.
 - **Where:** the branch, the worktree path, or the scratch path, relative to the main checkout where possible.
@@ -150,6 +198,8 @@ When a pause is possible, for example when the person asks for one or a usage li
 3. The manager runs each task's check and updates the tasks file. A subagent that does not answer is judged by its check alone.
 4. The manager writes its own handoff, tells the person the file names, and stops.
 
+A usage limit is also a reason to re-staff instead of pausing. When one tier is close to its limit, the manager can move mechanical tasks to a tier with spare capacity. It records the change in the tasks file and tightens the review as "Review in Proportion to the Risk" describes.
+
 ### Resuming
 
 Resuming does not depend on handoffs. It starts from the tasks file and the current state.
@@ -158,7 +208,7 @@ Resuming does not depend on handoffs. It starts from the tasks file and the curr
 2. Run each task's check against the current state, and sort the tasks:
    - **Accepted:** the check passes. Review the work, then mark it `accepted`.
    - **Partial:** the check fails, but some deliverables or commits exist. Mark it `failed-check` and inspect it before choosing to finish it or redo it.
-   - **Redo:** nothing usable exists. Mark it `redo` and delegate it again.
+   - **Redo:** nothing usable exists. Mark it `redo` and delegate it again, with the same staffing or a deliberate change.
 3. Check the rest of the state before acting: `git status`, `git worktree list`, the branches and their latest commits, and the state of each named pull request and issue (`gh pr view`, `gh issue view`). The person or another session may have changed things since the work stopped. When the state disagrees with the tasks file or a handoff, trust the state and tell the person.
 4. Ask the person the open decisions that are still open, then continue, delegating again as above.
 
