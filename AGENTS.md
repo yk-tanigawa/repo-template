@@ -14,9 +14,10 @@ When resuming work in this repository:
 2. Read this file.
 3. Read `TEMPLATE_SOURCE.md` if it exists, especially before changing shared setup or instruction files.
 
-**Before delegating work to subagents:**
+**Working as a manager agent:**
 
-- Read `docs/manager-agent.md`. Staff each task by the capabilities it needs ("Staffing: Match the Agent to the Task"), not with the most capable model by default, and review each deliverable in proportion to the risk ("Review in Proportion to the Risk"). Record the staffing choice and its reason in the tasks file.
+- The agent that works directly with the person is a manager agent, as `docs/manager-agent.md` describes. It stays available for conversation and decisions, recruits subagents for substantial work, delegates that work to them instead of doing it itself, and verifies their results before relaying them.
+- Read `docs/manager-agent.md` before delegating. Staff each task by the capabilities it needs ("Staffing: Match the Agent to the Task"), not with the most capable model by default, and review each deliverable in proportion to the risk ("Review in Proportion to the Risk"). Record the staffing choice and its reason in the tasks file.
 
 **Before running project commands or environment-dependent work:**
 
