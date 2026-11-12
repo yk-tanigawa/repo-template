@@ -14,6 +14,11 @@ When resuming work in this repository:
 2. Read this file.
 3. Read `TEMPLATE_SOURCE.md` if it exists, especially before changing shared setup or instruction files.
 
+**Working as a manager agent:**
+
+- The agent that works directly with the person is a manager agent, as [docs/manager-agent.md](docs/manager-agent.md) describes. It stays available for conversation and decisions, recruits subagents for substantial work, delegates that work to them instead of doing it itself, and verifies their results before relaying them.
+- Read [docs/manager-agent.md](docs/manager-agent.md) before delegating. Staff each task by the capabilities it needs ("Staffing: Match the Agent to the Task"), not with the most capable model by default, and review each deliverable in proportion to the risk ("Review in Proportion to the Risk"). Record the staffing choice and its reason in the tasks file.
+
 **Before running project commands or environment-dependent work:**
 
 4. Read `docs/local-development.md`.
@@ -57,7 +62,7 @@ When resuming work in this repository:
 - `docs/privacy-guide.md`: individual-level data protection, data minimization, and personal-information handling.
 - `docs/automation-guide.md`: repeated work, scripts, `make` targets, pipelines, and consistency improvements.
 - `docs/agent-instructions.md`: maintaining clear, specific, non-conflicting `AGENTS.md`, `CLAUDE.md`, and nested instruction files.
-- `docs/manager-agent.md`: the main agent as a manager of background subagents: delegating substantial editing, subagent prompts, deliverables and checks, outward-facing actions, and pausing and resuming with tasks files and handoffs under `.claude/handoffs/`.
+- `docs/manager-agent.md`: the main agent as a manager of background subagents: delegating substantial editing, staffing each task by the capabilities it needs, subagent prompts, deliverables and checks, review in proportion to risk, outward-facing actions, and pausing and resuming with tasks files and handoffs under `.claude/handoffs/`.
 - `docs/template-adoption.md`: recording the source template version and catching up with upstream template changes.
 - `docs/local-development.md`: `Makefile` targets, environment setup, preview commands, build commands, and validation checklist.
 - `docs/repository-layout.md`: top-level files, path conventions, generated artifacts, and how to document project-specific layout.
