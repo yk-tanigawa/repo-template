@@ -18,7 +18,7 @@ These stay with the person; ask, do not choose:
 ## Steps
 
 1. Fast-forward `main` first, so "in origin/main" reflects what has merged.
-2. Run the dry run, `make git-cleanup`, and show its whole output: the DELETE and KEEP lines, the unmerged commits, the remote list, and any note that open pull requests were not checked.
+2. Run the dry run, `make git-cleanup`, and show its whole output: the DELETE and KEEP lines (with the files listed under a KEEP leftover directory), the unmerged commits, the remote list, and any note that open pull requests were not checked.
 3. For each unmerged branch, say what its commits are and whether they reached `main` another way (for example, a squash merge, or a pull request merged into another branch instead of `main`). Do not call a branch safe to drop without that check.
 4. For a worktree kept for uncommitted changes, compare those changes with `main` and report the result; do not discard them.
 5. Give the person the commands to run: `make git-cleanup` with `GIT_CLEANUP_ARGS=--execute` (and `--include-unmerged` only if they chose it), and the printed `git push origin --delete` line for remote branches. They run these themselves, for example with `!` in the Claude Code prompt.
