@@ -28,6 +28,20 @@
 # with an open PR, worktrees with uncommitted changes, and locked worktrees.
 # Remote branches are only listed, never deleted.
 #
+# Leftover directories: directories directly under
+# <main worktree>/.claude/worktrees/ that git does not list as worktrees, such
+# as what a failed `git worktree remove` leaves. Each is listed as DELETE when
+# nothing would be lost, else KEEP with up to 5 files git does not hold.
+# Nothing is lost when every file outside __pycache__/ has content that is a
+# blob in the repository, or is identical to the same path in the main checkout
+# (such as .env.local), every symlink matches the same path in the main checkout
+# (such as _data) or is a tracked symlink, and a top-level .git file only points
+# to a git dir. Any other entry, or a failed or short hash-object or cat-file
+# run, keeps the directory. --execute checks registration and content again
+# right before it deletes each leftover. When `git worktree remove` fails after
+# git has unregistered the worktree, the same check runs on what is left and,
+# if it passes, rm -rf finishes the job.
+#
 # Before --execute deletes anything, every branch name and tip SHA is written to
 # <git dir>/cleanup-backups/, so `git branch <name> <sha>` restores a branch.
 #
@@ -86,6 +100,145 @@ in_main() {
 }
 
 contains_line() { grep -qxF -- "$2" <<<"$1"; }
+
+# ---- leftover directories ----
+# A leftover is a directory that is not, or no longer, a registered worktree:
+# what `git worktree remove` leaves when it fails after unregistering the
+# worktree, or a directory under <main worktree>/.claude/worktrees/ that git
+# does not list.
+
+# Print the physical path of every registered worktree, one per line.
+registered_paths() {
+    local list line p
+    list="$(git worktree list --porcelain)" || return 1
+    while IFS= read -r line; do
+        case "$line" in
+            "worktree "*)
+                p="${line#worktree }"
+                (cd "$p" 2>/dev/null && pwd -P) || echo "$p" ;;
+        esac
+    done <<<"$list"
+}
+
+# Check whether deleting directory $1 would lose anything. Return 0 when
+# nothing would be lost: every entry outside __pycache__/ directories is
+#   - a regular file whose content is a blob in this repository's object store
+#     (git hash-object, then git cat-file --batch-check, one process each), or
+#   - a regular file or symlink identical to the one at the same relative path
+#     in the main worktree ($main_wt), such as the .env.local and _data link
+#     that make worktree-setup puts in a worktree, or
+#   - a symlink whose target text is a blob in the object store (a tracked
+#     symlink), or
+#   - a .git file at the top that only points to a git dir ("gitdir: ...").
+# Anything else, including fifos, sockets and devices, is something git lacks.
+# Return 1 to keep the directory, with lo_reason set and up to 5 entries git
+# lacks in lo_examples. The check fails closed: if find, hash-object or cat-file
+# fails, or prints a different number of lines than there are files, or a file
+# name contains a newline, the directory is kept with the error as lo_reason.
+# On 0, lo_summary describes what was checked.
+lo_reason="" lo_examples="" lo_summary=""
+leftover_check() {
+    local w rc=0
+    lo_reason="" lo_examples="" lo_summary=""
+    # The main-checkout comparisons need its path; never fall back to /.
+    if [ -z "${main_wt:-}" ] || [ ! -d "$main_wt" ]; then
+        lo_reason="the content check failed: main checkout not known; review by hand"
+        return 1
+    fi
+    if ! w="$(mktemp -d "${TMPDIR:-/tmp}/git_cleanup_check.XXXXXX")"; then
+        lo_reason="the content check failed: could not create a scratch directory; review by hand"
+        return 1
+    fi
+    leftover_check_in "$1" "$w" || rc=$?
+    rm -rf "$w"
+    return "$rc"
+}
+
+# leftover_check for directory $1, with scratch files in directory $2.
+leftover_check_in() {
+    local d="$1" w="$2" n n_nul n_hash n_check n_lack=0 rel f t
+    lack() {  # lack <relative path> [note]
+        n_lack=$((n_lack + 1))
+        if [ "$n_lack" -le 5 ]; then lo_examples="$lo_examples"$'\n'"$1${2:+ ($2)}"; fi
+    }
+    # Regular files outside __pycache__, NUL-separated so that a newline in a
+    # name shows as a count mismatch rather than as two paths.
+    if ! find "$d" -type d -name __pycache__ -prune -o -type f -print0 > "$w/files0" 2> "$w/err" \
+        || ! find "$d" -type d -name __pycache__ -prune -o ! -type d ! -type f -print > "$w/other" 2>> "$w/err"; then
+        lo_reason="the content check failed: find could not list $d ($(head -n 1 "$w/err")); review by hand"
+        return 1
+    fi
+    if ! tr '\0' '\n' < "$w/files0" > "$w/files" \
+        || ! n="$(wc -l < "$w/files" | tr -d ' ')" \
+        || ! n_nul="$(tr -cd '\0' < "$w/files0" | wc -c | tr -d ' ')"; then
+        lo_reason="the content check failed: could not count the files; review by hand"
+        return 1
+    fi
+    if [ "$n" != "$n_nul" ]; then
+        lo_reason="the content check failed: a file name contains a newline; review by hand"
+        return 1
+    fi
+    if [ "$n" -gt 0 ]; then
+        if ! git hash-object --stdin-paths < "$w/files" > "$w/hashes" 2> "$w/err"; then
+            lo_reason="the content check failed: git hash-object: $(head -n 1 "$w/err"); review by hand"
+            return 1
+        fi
+        n_hash="$(wc -l < "$w/hashes" | tr -d ' ')"
+        if [ "$n_hash" != "$n" ]; then
+            lo_reason="the content check failed: git hash-object printed $n_hash hash(es) for $n file(s); review by hand"
+            return 1
+        fi
+        if ! git cat-file --batch-check='%(objectname) %(objecttype)' < "$w/hashes" > "$w/checked" 2> "$w/err"; then
+            lo_reason="the content check failed: git cat-file: $(head -n 1 "$w/err"); review by hand"
+            return 1
+        fi
+        n_check="$(wc -l < "$w/checked" | tr -d ' ')"
+        if [ "$n_check" != "$n" ]; then
+            lo_reason="the content check failed: git cat-file checked $n_check of $n hash(es); review by hand"
+            return 1
+        fi
+        # A file is held when cat-file answers "<its hash> blob"; anything
+        # else, including a line out of step, counts as missing.
+        if ! paste -d '\t' "$w/hashes" "$w/checked" "$w/files" \
+            | awk -F '\t' '$2 != $1 " blob" { sub(/^[^\t]*\t[^\t]*\t/, ""); print }' > "$w/missing"; then
+            lo_reason="the content check failed: could not compare the hashes; review by hand"
+            return 1
+        fi
+        while IFS= read -r f; do
+            rel="${f#"$d"/}"
+            if [ "$rel" = .git ] && [ "$(head -c 8 "$f" 2>/dev/null)" = "gitdir: " ]; then continue; fi
+            if [ -f "$main_wt/$rel" ] && [ ! -L "$main_wt/$rel" ] && cmp -s "$f" "$main_wt/$rel"; then continue; fi
+            lack "$rel"
+        done < "$w/missing"
+    fi
+    while IFS= read -r f; do
+        rel="${f#"$d"/}"
+        if [ -L "$f" ]; then
+            t="$(readlink "$f")" || { lack "$rel" "symlink"; continue; }
+            if [ -L "$main_wt/$rel" ] && [ "$(readlink "$main_wt/$rel")" = "$t" ]; then continue; fi
+            if git cat-file -e "$(printf '%s' "$t" | git hash-object --stdin)^{blob}" 2>/dev/null; then continue; fi
+            lack "$rel" "symlink"
+        else
+            lack "$rel" "not a regular file or symlink"
+        fi
+    done < "$w/other"
+    if [ "$n_lack" -gt 0 ]; then
+        lo_reason="$n_lack file(s) git does not hold, for example:"
+        return 1
+    fi
+    lo_summary="$n file(s) outside __pycache__, all content in git"
+}
+
+# Print lo_examples, indented under a KEEP line.
+print_lo_examples() { if [ -n "$lo_examples" ]; then sed '/^$/d; s/^/            /' <<<"$lo_examples"; fi; }
+
+# rm -rf the leftover $1, once more if the first try fails (as git's own
+# removal can fail with "Directory not empty").
+remove_leftover() {
+    rm -rf "$1" 2>/dev/null || true
+    if [ -e "$1" ]; then sleep 2; rm -rf "$1" || true; fi
+    [ ! -e "$1" ]
+}
 
 cleanup() {
     local repo="$1" execute="$2" include_unmerged="$3" use_gh="$4" want_base="$5"
@@ -175,6 +328,36 @@ cleanup() {
     done <<< "$wt_list"
     flush_wt
 
+    # ---- leftover directories under <main worktree>/.claude/worktrees ----
+    local -a lo_delete=()
+    local lo_root="$main_wt/.claude/worktrees" regs="" d phys lo_any=0
+    echo
+    echo "== Leftover directories in $lo_root (not registered worktrees)"
+    if [ -z "$main_wt" ]; then
+        echo "ERROR: 'git worktree list' named no main worktree; leftover directories not checked" >&2
+        return 1
+    fi
+    if ! regs="$(registered_paths)"; then
+        echo "ERROR: 'git worktree list' failed; leftover directories not checked" >&2
+        return 1
+    fi
+    if [ -d "$lo_root" ]; then
+        # -type d: a symlink here is not followed or listed.
+        while IFS= read -r d; do
+            phys="$(cd "$d" 2>/dev/null && pwd -P)" || phys="$d"
+            if contains_line "$regs" "$phys"; then continue; fi
+            lo_any=1
+            if leftover_check "$d"; then
+                echo "  DELETE  $d  not a registered worktree; nothing would be lost ($lo_summary)"
+                lo_delete+=("$d")
+            else
+                echo "  KEEP    $d  not a registered worktree; $lo_reason"
+                print_lo_examples
+            fi
+        done < <(find "$lo_root" -mindepth 1 -maxdepth 1 -type d -print | LC_ALL=C sort)
+    fi
+    if [ "$lo_any" = 0 ]; then echo "  none"; fi
+
     # ---- local branches ----
     local -a br_delete=() br_unmerged=()
     local b n
@@ -219,7 +402,7 @@ cleanup() {
     fi
 
     echo
-    echo "Summary: ${#wt_delete[@]} worktree(s) and ${#br_delete[@]} branch(es) to delete;" \
+    echo "Summary: ${#wt_delete[@]} worktree(s), ${#lo_delete[@]} leftover director(ies) and ${#br_delete[@]} branch(es) to delete;" \
          "${#br_unmerged[@]} unmerged branch(es) $([ "$include_unmerged" = 1 ] && echo included || echo kept)."
     if [ "$gh_ok" != 1 ]; then echo "Open PRs were not checked."; fi
     if [ "$execute" != 1 ]; then
@@ -238,22 +421,63 @@ cleanup() {
     if [ "${#wt_delete[@]}" -gt 0 ]; then
         for p in "${wt_delete[@]}"; do
             if [ ! -d "$p" ]; then continue; fi
-            # Clear Python bytecode caches first. They are ignored files, which
-            # git worktree remove deletes too, but a removal has been seen to
-            # stop with "Directory not empty" after git had already dropped the
-            # worktree, leaving only tracked files and __pycache__ behind.
-            # Clearing them first leaves git less to delete.
+            # Clear Python bytecode caches first, which leaves git less to
+            # delete. This does not prevent the failure handled below: on some
+            # network file systems, `git worktree remove` can stop with
+            # "Directory not empty" after it has unregistered the worktree and
+            # deleted part of it, for a cause not known. What was left in the
+            # cases seen was content git held, and __pycache__.
             if [ -n "$(find "$p" -type d -name __pycache__ -prune -print -quit 2>/dev/null)" ]; then
                 find "$p" -type d -name __pycache__ -prune -exec rm -rf {} + 2>/dev/null || true
                 echo "cleared __pycache__ in $p"
             fi
             if git worktree remove "$p"; then
                 echo "removed worktree $p"
-            else
+            elif [ ! -d "$p" ]; then
                 failed=1
-                if [ -d "$p" ] && ! git worktree list --porcelain | grep -qxF "worktree $p"; then
-                    echo "  git unregistered $p but left files in it; check what is left, then rm -rf it" >&2
+            elif ! regs="$(registered_paths)"; then
+                echo "  kept $p: 'git worktree list' failed, so it is not known whether git still has it" >&2
+                failed=1
+            elif contains_line "$regs" "$(cd "$p" && pwd -P)"; then
+                failed=1  # git kept the worktree; its error is above
+            elif leftover_check "$p"; then
+                if remove_leftover "$p"; then
+                    echo "removed leftover files in $p (all content in git)"
+                else
+                    echo "  git unregistered $p and nothing in it is missing from git, but rm -rf failed too; rm -rf it later" >&2
+                    failed=1
                 fi
+            else
+                echo "  KEEP    $p  git unregistered it but left files; $lo_reason" >&2
+                print_lo_examples >&2
+                failed=1
+            fi
+        done
+    fi
+    if [ "${#lo_delete[@]}" -gt 0 ]; then
+        for p in "${lo_delete[@]}"; do
+            if [ ! -d "$p" ]; then continue; fi
+            # Check again right before deleting: a new worktree may have been
+            # registered there, or a file added, since the listing.
+            if ! regs="$(registered_paths)"; then
+                echo "kept leftover $p: 'git worktree list' failed" >&2
+                failed=1
+                continue
+            fi
+            if contains_line "$regs" "$(cd "$p" && pwd -P)"; then
+                echo "kept leftover $p: it is now a registered worktree (checked again before deleting)"
+                continue
+            fi
+            if ! leftover_check "$p"; then
+                echo "kept leftover $p: $lo_reason (checked again before deleting)"
+                print_lo_examples
+                continue
+            fi
+            if remove_leftover "$p"; then
+                echo "removed leftover $p (all content in git)"
+            else
+                echo "  could not remove leftover $p" >&2
+                failed=1
             fi
         done
     fi
@@ -325,6 +549,20 @@ self_test() {
         # An ignored bytecode cache in a worktree that will be removed.
         echo '__pycache__/' >> .git/info/exclude
         mkdir -p ../wt-clean/sub/__pycache__ && echo x > ../wt-clean/sub/__pycache__/m.cpython-39.pyc
+        # Leftover directories under .claude/worktrees, next to a registered
+        # worktree there. lo-clean holds only what git or the main checkout
+        # has: committed files, __pycache__, a .git pointer, and an ignored
+        # .env.local and _data link like those make worktree-setup puts in a
+        # worktree. lo-new also holds a file git does not have.
+        printf '.claude/\n.env.local\n_data\n' >> .git/info/exclude
+        echo 'LOCAL=1' > .env.local && ln -s ../data-root _data
+        git worktree add -q --detach .claude/worktrees/wt-reg main
+        lo=.claude/worktrees
+        mkdir -p $lo/lo-clean/pkg/__pycache__ $lo/lo-new
+        cp a.txt b.txt .env.local $lo/lo-clean/ && ln -s ../data-root $lo/lo-clean/_data
+        echo x > $lo/lo-clean/pkg/__pycache__/m.cpython-39.pyc
+        echo "gitdir: $tmp/work/.git/worktrees/lo-clean" > $lo/lo-clean/.git
+        cp a.txt $lo/lo-new/ && echo 'not committed' > $lo/lo-new/notes.txt
     ) || { echo "FAIL: could not build the fixture"; return 1; }
 
     echo "dry run:"
@@ -339,6 +577,15 @@ self_test() {
     expect "main is kept" '^  KEEP    main  main or the current branch'
     expect "merged remote branch is listed" 'git push origin --delete merged'
     expect "dry run says nothing changed" 'Dry run: nothing changed'
+    expect "leftover with only content git has is deleted" 'DELETE  .*/\.claude/worktrees/lo-clean  not a registered worktree; nothing would be lost \(4 file'
+    expect "leftover with a new file is kept" 'KEEP    .*/\.claude/worktrees/lo-new  not a registered worktree; 1 file\(s\) git does not hold'
+    expect "the new file is named" '^            notes\.txt$'
+    expect "leftovers are counted in the summary" '^Summary: .* 1 leftover director'
+    if grep -qE 'wt-reg  not a registered' <<<"$out"; then
+        echo "  FAIL  registered worktree under .claude/worktrees listed as a leftover"; fails=$((fails + 1))
+    else
+        echo "  ok    registered worktree under .claude/worktrees not listed as a leftover"
+    fi
     expect_ref present merged
 
     echo "dry run from a linked worktree:"
@@ -351,6 +598,7 @@ self_test() {
     else
         echo "  ok    main checkout not listed for DELETE"
     fi
+    expect "leftovers of the main checkout are listed" 'DELETE  .*/work/\.claude/worktrees/lo-clean  not a registered worktree'
 
     echo "--execute:"
     out="$(bash "$script" --no-gh "$tmp/work" --execute 2>&1)" || true
@@ -364,11 +612,69 @@ self_test() {
     expect_ref present main
     if [ -d "$tmp/wt-clean" ]; then echo "  FAIL  wt-clean should be removed"; fails=$((fails + 1)); else echo "  ok    wt-clean removed"; fi
     if [ -d "$tmp/wt-dirty" ]; then echo "  ok    wt-dirty kept"; else echo "  FAIL  wt-dirty should be kept"; fails=$((fails + 1)); fi
+    expect "leftover is removed" '^removed leftover .*/lo-clean \(all content in git\)$'
+    if [ -e "$tmp/work/.claude/worktrees/lo-clean" ]; then echo "  FAIL  lo-clean should be removed"; fails=$((fails + 1)); else echo "  ok    lo-clean removed"; fi
+    if [ -f "$tmp/work/.claude/worktrees/lo-new/notes.txt" ]; then echo "  ok    lo-new kept"; else echo "  FAIL  lo-new should be kept"; fails=$((fails + 1)); fi
 
     echo "--execute --include-unmerged:"
     out="$(bash "$script" --no-gh "$tmp/work" --execute --include-unmerged 2>&1)" || true
     expect_ref absent unmerged
     expect_ref present wt-dirty
+
+    # A stub git in front of the real one. For a worktree named wt-fail-*,
+    # `git worktree remove` unregisters and deletes it, puts its files and a
+    # __pycache__ back, and fails with "Directory not empty", as a removal can
+    # on some network file systems; in wt-fail-new it also leaves a file git
+    # does not have. With STUB_GIT_HASH=short, `git hash-object --stdin-paths`
+    # drops its last line, as a file vanishing during the check would.
+    (
+        set -e
+        mkdir -p "$tmp/bin-git"
+        {
+            printf '#!/bin/sh\nreal='\''%s'\''\n' "$(command -v git)"
+            cat <<'EOF'
+case "$1 $2 ${3##*/}" in
+    "worktree remove wt-fail-"*)
+        p="$3"
+        cp -R "$p" "$p.stub-copy" && "$real" worktree remove "$p" || exit 1
+        mv "$p.stub-copy" "$p"
+        mkdir -p "$p/pkg/__pycache__" && echo x > "$p/pkg/__pycache__/m.pyc"
+        if [ "${p##*/}" = wt-fail-new ]; then echo new > "$p/appeared.txt"; fi
+        echo "error: failed to delete '$p': Directory not empty" >&2
+        exit 128 ;;
+esac
+if [ "$1 $2" = "hash-object --stdin-paths" ] && [ "${STUB_GIT_HASH:-}" = short ]; then
+    "$real" "$@" | sed '$d'
+    exit 0
+fi
+exec "$real" "$@"
+EOF
+        } > "$tmp/bin-git/git"
+        chmod +x "$tmp/bin-git/git"
+        git -C "$tmp/work" worktree add -q --detach "$tmp/wt-fail-ok" main
+        git -C "$tmp/work" worktree add -q --detach "$tmp/wt-fail-new" main
+        mkdir "$tmp/work/.claude/worktrees/lo-short"
+        cp "$tmp/work/a.txt" "$tmp/work/b.txt" "$tmp/work/.claude/worktrees/lo-short/"
+    ) || { echo "FAIL: could not build the stub git fixture"; return 1; }
+
+    echo "leftover check fails closed (hash-object prints too few lines):"
+    out="$(PATH="$tmp/bin-git:$PATH" STUB_GIT_HASH=short bash "$script" --no-gh "$tmp/work" 2>&1)"
+    expect "a short hash list keeps the leftover" 'KEEP    .*/lo-short  not a registered worktree; the content check failed: git hash-object printed 1 hash\(es\) for 2 file\(s\)'
+    out="$(PATH="$tmp/bin-git:$PATH" bash "$script" --no-gh "$tmp/work" 2>&1)"
+    expect "the same leftover is deleted when the check works" 'DELETE  .*/lo-short  not a registered worktree; nothing would be lost'
+
+    echo "git worktree remove fails after unregistering (stub git, --execute):"
+    out="$(PATH="$tmp/bin-git:$PATH" bash "$script" --no-gh "$tmp/work" --execute 2>&1)" || true
+    expect "git's error is shown" "failed to delete '.*/wt-fail-ok': Directory not empty"
+    expect "what git left is removed" '^removed leftover files in .*/wt-fail-ok \(all content in git\)$'
+    expect "a leftover with a new file is kept" 'KEEP    .*/wt-fail-new  git unregistered it but left files; 1 file\(s\) git does not hold'
+    expect "the new file is named" '^            appeared\.txt$'
+    expect "the kept leftover counts as a failure" 'Some deletions failed'
+    expect "listed leftover is removed" '^removed leftover .*/lo-short \(all content in git\)$'
+    if [ -e "$tmp/wt-fail-ok" ]; then echo "  FAIL  wt-fail-ok should be removed"; fails=$((fails + 1)); else echo "  ok    wt-fail-ok removed"; fi
+    if [ -f "$tmp/wt-fail-new/appeared.txt" ]; then echo "  ok    wt-fail-new kept"; else echo "  FAIL  wt-fail-new should be kept"; fails=$((fails + 1)); fi
+    if [ -e "$tmp/work/.claude/worktrees/lo-short" ]; then echo "  FAIL  lo-short should be removed"; fails=$((fails + 1)); else echo "  ok    lo-short removed"; fi
+    if [ -f "$tmp/work/.claude/worktrees/lo-new/notes.txt" ]; then echo "  ok    lo-new survives every --execute"; else echo "  FAIL  lo-new should be kept"; fails=$((fails + 1)); fi
 
     # A repository whose default branch is master, with no origin/main. Its
     # main checkout is on a detached HEAD, so master is kept only because it is
